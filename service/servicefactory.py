@@ -1,3 +1,5 @@
+from typing import Union, List
+
 from sensortask import SensorTask
 from calculatetask import CalculateTask
 from communicationtask import CommunicationTask
@@ -14,9 +16,9 @@ class TypeOfTask(Enum):
 
 class TaskFactory:
     @staticmethod
-    def create_task(task_type: TypeOfTask, slice_sign: int) -> Task:
+    def create_task(task_type: TypeOfTask, slice_sign: int, path: Union[List[int], None] = None) -> Task:
         if task_type == TypeOfTask.communication_task:
-            return CommunicationTask(slice_sign=slice_sign)
+            return CommunicationTask(slice_sign=slice_sign, path=path)
         elif task_type == TypeOfTask.calculate_task:
             return CalculateTask(slice_sign=slice_sign)
         elif task_type == TypeOfTask.sensor_task:

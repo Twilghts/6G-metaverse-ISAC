@@ -1,19 +1,24 @@
+from typing import Union
+
 import numpy as np
 from numpy import float32
 from scipy.stats import norm
 
 
-def reword_for_delay(value) -> float:
+def reword_for_delay(delay) -> float:
     """求正态分布函数与一条平行于x轴的直线所围成的面积，传入的参数为直线的y坐标值。作为求时延的奖励函数"""
     # 运行一次大概为1/5000秒
     # 正态分布的标准差
     std_dev: float = 1
-    if value >= norm.pdf(0, 0, std_dev):
+    """如果当前时间片没有处理通信任务就返回一个比较小的奖励值"""
+    if delay == -1:
+        return 0.2
+    elif delay >= norm.pdf(0, 0, std_dev):
         return 0
-    elif value <= 0:
+    elif delay <= 0:
         return 1
     else:
-        _x: float = np.sqrt(-2 * np.square(std_dev) * np.log(np.sqrt(2 * np.pi) * std_dev * value))
+        _x: float = np.sqrt(-2 * np.square(std_dev) * np.log(np.sqrt(2 * np.pi) * std_dev * delay))
         return norm.cdf(_x, 0, std_dev) - \
             norm.cdf(-_x, 0, std_dev) - 2 * \
             _x * norm.pdf(_x, 0, std_dev)
@@ -22,23 +27,31 @@ def reword_for_delay(value) -> float:
 def reword_for_hash_rate(delay: int) -> float:
     """求吞吐量的奖励函数"""
     # 正态分布的均值和标准差
+    """如果当前时间片没有处理计算任务就返回一个比较小的奖励值"""
+    if delay == -1:
+        return 0.2
     mean = 0
     std_dev = 1.0 / np.sqrt(2 * np.pi)
     return norm.pdf(delay, mean, std_dev)
 
 
-def reword_for_package_loss_sensitive(loss: float) -> float:
+def reword_for_package_loss_sensitive(loss: Union[None, bool]) -> float:
     """丢包率敏感的切片的丢包率奖励函数"""
-
-    if loss != 0:
+    """如果当前时间片没有处理存储任务就返回一个折中的奖励值"""
+    if loss is None:
+        return 0.5
+    elif loss:
         return 0
     else:
         return 1
 
 
-def reword_for_package_loss_insensitive(loss: float) -> float:
+def reword_for_package_loss_insensitive(loss: Union[None, bool]) -> float:
     """丢包率不敏感的切片的丢包率奖励函数"""
-    if loss != 0:
+    """如果当前时间片没有处理存储任务就返回一个折中的奖励值"""
+    if loss is None:
+        return 0.05
+    elif loss != 0:
         return 0
     else:
         return 0.1

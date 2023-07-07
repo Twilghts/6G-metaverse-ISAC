@@ -10,10 +10,10 @@ if __name__ == '__main__':
     )
     _cursor = _conn_initialize.cursor()
     _update_keyvalue_dataid = "UPDATE keyvalues " \
-                              "SET value = COALESCE((SELECT max(id) FROM data), 0)" \
+                              "SET delay = COALESCE((SELECT max(id) FROM data), 0)" \
                               " WHERE key = 'dataid'"
     _update_keyvalue_taskid = "UPDATE keyvalues " \
-                              "SET value = COALESCE((SELECT max(id) FROM task), 0) " \
+                              "SET delay = COALESCE((SELECT max(id) FROM task), 0) " \
                               "WHERE key = 'taskid'"
     _cursor.execute(_update_keyvalue_dataid)
     _cursor.execute(_update_keyvalue_taskid)

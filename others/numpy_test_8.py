@@ -1,8 +1,8 @@
 import numpy as np
 
 mean = 500  # 正态分布的均值
-stddev = 50  # 正态分布的标准差
-size = 16  # 生成的整数数量
+stddev = 150  # 正态分布的标准差
+size = 32  # 生成的整数数量
 
 random_floats = np.random.normal(mean, stddev, size)
 random_ints = np.round(random_floats).astype(int)

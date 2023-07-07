@@ -13,4 +13,4 @@ x = norm.ppf(y, loc=mean, scale=std_dev)
 print("x =", x)
 pdf_value = norm.pdf(x, loc=mean, scale=std_dev)
 
-print("PDF value at x =", pdf_value)
+print("PDF delay at x =", pdf_value)

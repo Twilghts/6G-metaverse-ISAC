@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from enum import Enum
+from typing import List, Union
 
 
 class Data(ABC):
@@ -8,7 +9,6 @@ class Data(ABC):
         self.sign = dataid
         self.slice_sign = slice_sign
         self.current_router: int = -1
-        self.path: list = []
 
     @abstractmethod
     def __repr__(self):
@@ -20,9 +20,9 @@ class Data(ABC):
 
 
 class CommunicationData(Data):
-    def __init__(self, slice_sign: int, dataid: int, bandwidth_required: int = 1):
+    def __init__(self, slice_sign: int, dataid: int, bandwidth_required: int = 1, path: Union[List[int], None] = None):
         super().__init__(slice_sign, dataid)
-
+        self.path: Union[List[int], None] = path
         self.bandwidth_required: int = bandwidth_required
         self.delay: int = 0  # 代表了数据包在上一段链路的时延
         self.delay_every_step: list = []
@@ -68,9 +68,9 @@ class TypeOfData(Enum):
 
 class DataFactory:
     @staticmethod
-    def create_data(task_type: TypeOfData, slice_sign: int, dataid: int) -> Data:
+    def create_data(task_type: TypeOfData, slice_sign: int, dataid: int, path: Union[List[int], None] = None) -> Data:
         if task_type == TypeOfData.communication_data:
-            return CommunicationData(slice_sign=slice_sign, dataid=dataid)
+            return CommunicationData(slice_sign=slice_sign, dataid=dataid, path=path)
         elif task_type == TypeOfData.calculate_data:
             return CalculateData(slice_sign=slice_sign, dataid=dataid)
         elif task_type == TypeOfData.sensor_data:

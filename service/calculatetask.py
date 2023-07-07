@@ -1,3 +1,6 @@
+import random
+from typing import List
+
 import psycopg2
 
 from data import DataFactory, TypeOfData
@@ -24,7 +27,7 @@ _sql_for_data = 'INSERT INTO data (id, slice, type)  ' \
 
 
 class CalculateTask(Task):
-    def __init__(self, slice_sign: int, calculate_required: int = 4):
+    def __init__(self, slice_sign: int, calculate_required: int = random.randint(1, 6)):
         super().__init__(slice_sign)
         """查询最新的taskid并将其赋值给这个任务的id"""
         _cursor.execute("SELECT value FROM keyvalues WHERE key = 'taskid'")
@@ -42,7 +45,7 @@ class CalculateTask(Task):
         self.calculate_required: int = calculate_required
 
         """存储属于该任务的数据包"""
-        self.dataset = set()
+        self.dataset: List = []
 
         """查询最新的dataid并将其给data赋值"""
         _cursor.execute("SELECT value FROM keyvalues WHERE key = 'dataid'")
@@ -56,7 +59,7 @@ class CalculateTask(Task):
             _cursor.execute(_sql_for_data, values)
 
             """向self.dataset中添加数据包，为转发做准备"""
-            self.dataset.add(data)
+            self.dataset.append(data)
 
             """向表task_data中插入数据"""
             values = (self.sign, data.sign)

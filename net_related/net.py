@@ -1,4 +1,5 @@
-from typing import Dict
+import copy
+from typing import Dict, List
 
 import networkx as nx
 from matplotlib import pyplot as plt
@@ -25,10 +26,14 @@ class Net:
         self.G: nx.Graph = nx.relabel_nodes(self.G, relabel_table)
         self.router_storage = [19060, 8763, 16297, 22901, 13735, 13530, 21507, 19683, 3692, 22855, 28427, 12424,
                                13628, 12968, 22011, 10952]
+        self.router_storage.sort()
         self.router_calculate = [143, 167, 115, 196, 168, 135, 186, 53, 151, 47, 116, 107, 83, 80, 135, 165]
-        self.router_bandwidth = [438, 520, 443, 458, 488, 525, 452, 483, 471, 496, 484, 488, 532, 509, 550, 433]
+        self.router_calculate.sort(reverse=True)
+        self.router_bandwidth = [438, 520, 443, 458, 488, 525, 452, 483, 471, 496, 484, 488,
+                                 532, 509, 550, 433]
         """路由器组 为字典，键为路由器的编号，值为所对应的路由器,设置路由器内部可存储的数据容量。"""
-        self.routers: Dict[int: Router] = {
+
+        self.routers: Dict[int, Router] = {
             number: Router(number, storage=self.router_storage[number], computing_power=self.router_calculate[number],
                            bandwidth=self.router_bandwidth[number]) for number in self.G.nodes
         }
@@ -36,15 +41,29 @@ class Net:
         # for u, v in self.G.edges:
         #     self.G[u][v]['weight']: int = (self.routers[u].storage + self.routers[v].storage) // 2
         """网络连接组 为字典，键为起始路由器和终止路由器的元组，值为相对应的网络链接。"""
-        self.links: Dict[tuple: Link] = {
+        self.link_bandwidth = [761, 443, 656, 655, 302, 488, 542, 673, 674, 624, 639, 678, 463, 426, 334, 254,
+                               659, 327, 703, 888, 392, 468, 504, 656, 453, 251, 669, 509, 603, 661, 469, 371]
+        self.links: Dict[tuple, Link] = {
             (start, target): Link((start, target)) for start, target in self.G.edges
         }
+        for number, link in zip(range(32), self.links.values()):
+            link.sign = number
+            link.bandwidth = self.link_bandwidth[number]
 
     def __repr__(self):
         pass
 
     def __str__(self):
         pass
+
+    def deal_data(self):
+        for router in self.routers.values():
+            router.deal_sensor_data()
+            router.deal_calculate_task()
+            dataset = router.pop_data_communication()
+            if dataset:
+                for data in dataset:
+                    self.routers[data.path.index(data.current_router) + 1].push_data_communication(data)
 
     def show_graph(self):
         # 使用spring布局绘制图形
@@ -69,3 +88,59 @@ class Net:
         nx.draw_networkx_edge_labels(self.G, pos, edge_labels=labels)
 
         plt.savefig("../resource/graph.svg", dpi=_dpi_value, format='svg')
+
+    def initialize(self):
+        for router in self.routers.values():
+            # 针对路由器带宽资源的初始化，切片一是主要处理通信业务的
+            router.distribution[1][1] = 0.7
+            router.distribution[1][2] = 0.15
+            router.distribution[1][3] = 0.15
+            # 针对路由器计算资源的初始化，切片二是主要处理计算业务的
+            router.distribution[2][1] = 0.15
+            router.distribution[2][2] = 0.7
+            router.distribution[2][3] = 0.15
+            # 针对路由器存储资源的初始化，切片三是主要处理存储业务的
+            router.distribution[2][1] = 0.15
+            router.distribution[2][2] = 0.15
+            router.distribution[2][3] = 0.7
+        for link in self.links.values():
+            # 针对链路带宽资源的初始化，切片一是主要处理通信业务的
+            link.communication_distribution[1] = 0.7
+            link.communication_distribution[2] = 0.15
+            link.communication_distribution[3] = 0.15
+
+    def chose_paths(self) -> Dict[int, List[List[int]]]:
+        paths: Dict[int, List[List[int]]] = {
+            1: [[]],
+            2: [[]],
+            3: [[]]
+        }
+        slice_1_start_node = [0, 1]
+        slice_1_target_node = [6, 10]
+        slice_2_start_node = [1, 2]
+        slice_2_target_node = [10, 12]
+        slice_3_start_node = [2, 3]
+        slice_3_target_node = [6, 12]
+        """为通信数据包临时选一些路"""
+        """切片一的临时图"""
+        tem_graph_slice_1 = copy.deepcopy(self.G)
+        """切片二的临时图"""
+        tem_graph_slice_2 = copy.deepcopy(self.G)
+        """切片三的临时图"""
+        tem_graph_slice_3 = copy.deepcopy(self.G)
+        """以切片一在通信上的性能指标作为权值的基础，链路两端路由器的平均值作为该链路的权值"""
+        for start, target, data in tem_graph_slice_1.edges(data=True):
+            data['weight'] = (self.routers[start].state[0][0] + self.routers[target].state[0][0]) / 2
+        paths[1] = [nx.shortest_path(tem_graph_slice_1, source=source, target=target)
+                    for source in slice_1_start_node for target in slice_1_target_node]
+        """以切片一在通信上的性能指标作为权值的基础，链路两端路由器的平均值作为该链路的权值"""
+        for start, target, data in tem_graph_slice_2.edges(data=True):
+            data['weight'] = (self.routers[start].state[0][1] + self.routers[target].state[0][1]) / 2
+        paths[2] = [nx.shortest_path(tem_graph_slice_2, source=source, target=target)
+                    for source in slice_2_start_node for target in slice_2_target_node]
+        """以切片一在通信上的性能指标作为权值的基础，链路两端路由器的平均值作为该链路的权值"""
+        for start, target, data in tem_graph_slice_3.edges(data=True):
+            data['weight'] = (self.routers[start].state[0][2] + self.routers[target].state[0][2]) / 2
+        paths[3] = [nx.shortest_path(tem_graph_slice_3, source=source, target=target)
+                    for source in slice_3_start_node for target in slice_3_target_node]
+        return paths

@@ -1,3 +1,6 @@
+import random
+from typing import Union, List
+
 import psycopg2
 
 from net_related.data import DataFactory, TypeOfData
@@ -24,8 +27,11 @@ _sql_for_data = 'INSERT INTO data (id, slice, type)  ' \
 
 
 class CommunicationTask(Task):
-    def __init__(self, slice_sign: int, communication_required: int = 20):
+    def __init__(self, slice_sign: int, communication_required: int = random.randint(3, 15),
+                 path: Union[List[int], None] = None):
         super().__init__(slice_sign)
+        """这个任务的所有数据包的路径"""
+        self.path = path
         """查询最新的taskid并将其赋值给这个任务的id"""
         _cursor.execute("SELECT value FROM keyvalues WHERE key = 'taskid'")
         self.sign = _cursor.fetchone()[0]
@@ -42,21 +48,22 @@ class CommunicationTask(Task):
         self.communication_required: int = communication_required
 
         """存储属于该任务的数据包"""
-        self.dataset = set()
+        self.dataset: List = []
 
         """查询最新的dataid并将其给data赋值"""
         _cursor.execute("SELECT value FROM keyvalues WHERE key = 'dataid'")
         data_sign = _cursor.fetchone()[0]
 
         for i in range(self.communication_required):
-            data = DataFactory.create_data(TypeOfData.communication_data, slice_sign=slice_sign, dataid=data_sign)
+            data = DataFactory.create_data(TypeOfData.communication_data,
+                                           slice_sign=slice_sign, dataid=data_sign, path=path)
 
             """向表data中注册该数据包"""
             values = (data.sign, slice_sign, "CommunicationData")
             _cursor.execute(_sql_for_data, values)
 
             """向self.dataset中添加数据包，为转发做准备"""
-            self.dataset.add(data)
+            self.dataset.append(data)
 
             """向表task_data中插入数据"""
             values = (self.sign, data.sign)

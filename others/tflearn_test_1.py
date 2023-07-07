@@ -51,7 +51,7 @@ except Exception:
     histogram_summary = tf2.summary.histogram
     scalar_summary = tf2.summary.scalar
 
-# Change that value to test instead of train
+# Change that delay to test instead of train
 testing = False
 # Model path (to load when testing)
 test_model_path = '/path/to/your/qlearning.tflearn.ckpt'
@@ -70,7 +70,7 @@ TMAX = 80000000
 T = 0
 # Consecutive screen frames when performing training
 action_repeat = 4
-# Async gradient update frequency of each learning thread
+# Async gradient update frequency of each learning process
 I_AsyncUpdate = 5
 # Timestep to reset the target network
 I_target = 40000
@@ -159,7 +159,7 @@ class AtariEnvironment(object):
 
     def step(self, action_index):
         """
-        Excecutes an action in the gym environment.
+        Excecutes an action_index in the gym environment.
         Builds current state (concatenation of action_repeat-1 previous
         frames and current one). Pops oldest frame, adds current frame to
         the state buffer. Returns current state.
@@ -185,7 +185,7 @@ class AtariEnvironment(object):
 # =============================
 def sample_final_epsilon():
     """
-    Sample a final epsilon value to anneal towards from a distribution.
+    Sample a final epsilon delay to anneal towards from a distribution.
     These values are specified in section 5.1 of http://arxiv.org/pdf/1602.01783v1.pdf
     """
     final_epsilons = np.array([.1, .01, .5])
@@ -196,7 +196,7 @@ def sample_final_epsilon():
 def actor_learner_thread(thread_id, env, session, graph_ops, num_actions,
                          summary_ops, saver):
     """
-    Actor-learner thread implementing asynchronous one-step Q-learning, as specified
+    Actor-learner process implementing asynchronous one-step Q-learning, as specified
     in algorithm 1 here: http://arxiv.org/pdf/1602.01783v1.pdf.
     """
     global TMAX, T
@@ -244,7 +244,7 @@ def actor_learner_thread(thread_id, env, session, graph_ops, num_actions,
             # Forward the deep q network, get Q(s,a) values
             readout_t = q_values.eval(session=session, feed_dict={s: [s_t]})
 
-            # Choose next action based on e-greedy policy
+            # Choose next action_index based on e-greedy policy
             a_t = np.zeros([num_actions])
             if random.random() <= epsilon:
                 action_index = random.randrange(num_actions)
@@ -256,7 +256,7 @@ def actor_learner_thread(thread_id, env, session, graph_ops, num_actions,
             if epsilon > final_epsilon:
                 epsilon -= (initial_epsilon - final_epsilon) / anneal_epsilon_timesteps
 
-            # Gym excecutes action in game environment on behalf of actor-learner
+            # Gym excecutes action_index in game environment on behalf of actor-learner
             s_t1, r_t, terminal, info = env.step(action_index)
 
             # Accumulate gradients
@@ -360,8 +360,8 @@ def build_summaries():
     logged_epsilon = tf.Variable(0.)
     scalar_summary("Epsilon", logged_epsilon)
     # Threads shouldn't modify the main graph, so we use placeholders
-    # to assign the value of every summary (instead of using assign method
-    # in every thread, that would keep creating new ops in the graph)
+    # to assign the delay of every summary (instead of using assign method
+    # in every process, that would keep creating new ops in the graph)
     summary_vars = [episode_reward, episode_ave_max_q, logged_epsilon]
     summary_placeholders = [tf.placeholder("float")
                             for i in range(len(summary_vars))]
@@ -386,7 +386,7 @@ def train(session, graph_ops, num_actions, saver):
     Train a model.
     """
 
-    # Set up game environments (one per thread)
+    # Set up game environments (one per process)
     envs = [gym.make(game) for i in range(n_threads)]
 
     summary_ops = build_summaries()
