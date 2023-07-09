@@ -71,7 +71,6 @@ class SensorTask(Task):
         """更新data最新的id"""
         data = (data_sign, )
         _cursor.execute(_update_keyvalue, data)
-        _conn_with_task.commit()
 
     def __repr__(self):
         return f"SensorTask,要求的感知资源为:{self.sensor_required}"

@@ -22,6 +22,8 @@ conn_with_router = psycopg2.connect(
     user="postgres",
     password="rkw2536153"
 )
+# 创建一个游标对象
+cursor = conn_with_router.cursor()
 
 
 class Router:
@@ -192,8 +194,7 @@ class Router:
 
     def pop_data_communication(self) -> Union[List[CommunicationData], None]:
         data_list: List[CommunicationData] = []
-        # 创建一个游标对象
-        cursor = conn_with_router.cursor()
+
         waiting_time = 0
         while self.cache_queue_communication:
             data: CommunicationData = self.cache_queue_communication.pop()
@@ -221,10 +222,6 @@ class Router:
                 del data
             else:
                 data_list.append(data)
-        # 提交事务
-        conn_with_router.commit()
-        # 关闭游标
-        cursor.close()
         """有数据传数据，没数据传None"""
         if data_list:
             return data_list
@@ -232,8 +229,6 @@ class Router:
             return None
 
     def push_data_communication(self, data_list: Union[List[CommunicationData], CommunicationData]):
-        # 创建一个游标对象
-        cursor = conn_with_router.cursor()
         """如果是单个的数据包就单独处理"""
         if not isinstance(data_list, Iterable):
             """更新数据包状态，为下一次转发做准备"""
@@ -284,11 +279,8 @@ class Router:
                     """负载容量不够，数据包丢失，统计数据"""
                     self.communication_loss_data += 1
                     del data
-        conn_with_router.commit()
 
     def deal_calculate_task(self):
-        # 创建一个游标对象
-        cursor = conn_with_router.cursor()
         waiting_time = 0
         while self.calculate_queue:
             data: CalculateData = self.calculate_queue.pop()
@@ -300,10 +292,6 @@ class Router:
             values = (data.sign, self.sign, waiting_time, data.slice_sign)
             cursor.execute(sql, values)
             del data
-        # 提交事务
-        conn_with_router.commit()
-        # 关闭游标
-        cursor.close()
 
     def push_calculate_task(self, tasks: Union[CalculateData, List[CalculateData]]):
         if isinstance(tasks, Iterable):
@@ -312,8 +300,6 @@ class Router:
             self.calculate_queue.append(tasks)
 
     def push_sensor_data(self, dataset: Union[SensorData, List[SensorData]]):
-        # 创建一个游标对象
-        cursor = conn_with_router.cursor()
         if isinstance(dataset, Iterable):
             for task in dataset:
                 """存储资源不够则丢包，够则存储"""
@@ -342,14 +328,8 @@ class Router:
                 values = (dataset.sign, self.sign, dataset.slice_sign, True)
                 cursor.execute(sql, values)
                 del dataset
-        # 提交事务
-        conn_with_router.commit()
-        # 关闭游标
-        cursor.close()
 
     def deal_sensor_data(self):
-        # 创建一个游标对象
-        cursor = conn_with_router.cursor()
         while self.sensor_queue:
             """临时承载数据包"""
             temporary_list: List[SensorData] = []
@@ -367,7 +347,3 @@ class Router:
                 cursor.execute(sql, values)
                 del data
             self.sensor_queue.extend(temporary_list)
-        # 提交事务
-        conn_with_router.commit()
-        # 关闭游标
-        cursor.close()
