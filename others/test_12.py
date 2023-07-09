@@ -4,6 +4,7 @@ import sensortask
 from service.servicefactory import TaskFactory, TypeOfTask
 from service.sensortask import SensorTask
 from service.task import Task
+import service.sensortask
 
 if __name__ == '__main__':
     task = TaskFactory.create_task(TypeOfTask.sensor_task, 1)
@@ -16,3 +17,4 @@ if __name__ == '__main__':
     print(isinstance(task, Task))
     print(type(task))
     print(isinstance(task, sensortask.SensorTask))
+    print(isinstance(task, service.sensortask.SensorTask))

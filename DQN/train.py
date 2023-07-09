@@ -4,9 +4,9 @@ from typing import Set, Dict, List, Union
 
 import psutil
 
+import communicationtask
 from net_related.net import Net
 from service.servicefactory import TaskFactory, TypeOfTask
-from service.communicationtask import CommunicationTask
 from service.task import Task
 
 
@@ -46,7 +46,7 @@ if __name__ == '__main__':
     for i in range(170):
         for j in range(50):
             task = task_set.pop()
-            if isinstance(task, CommunicationTask):
+            if isinstance(task, communicationtask.CommunicationTask):
                 net.routers[task.path[0]].put_task(task)
             else:
                 random.choice(list(net.routers.values())).put_task(task)
@@ -67,7 +67,7 @@ if __name__ == '__main__':
         for i in range(75):
             for j in range(50):
                 task = task_set.pop()
-                if isinstance(task, CommunicationTask):
+                if isinstance(task, communicationtask.CommunicationTask):
                     net.routers[task.path[0]].put_task(task)
                 else:
                     random.choice(list(net.routers.values())).put_task(task)

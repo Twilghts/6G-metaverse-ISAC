@@ -63,7 +63,8 @@ class Net:
             dataset = router.pop_data_communication()
             if dataset:
                 for data in dataset:
-                    self.routers[data.path.index(data.current_router) + 1].push_data_communication(data)
+                    index = data.path.index(data.current_router) + 1
+                    self.routers[data.path[index]].push_data_communication(data)
 
     def show_graph(self):
         # 使用spring布局绘制图形

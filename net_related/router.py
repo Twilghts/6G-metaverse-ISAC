@@ -1,18 +1,18 @@
-from collections import deque
-from typing import List, Union, Dict
-from collections.abc import Iterable
 import copy
+from collections import deque
+from collections.abc import Iterable
+from typing import List, Union, Dict
 
 import numpy as np
 import psycopg2
 
-from DQN.agent import DQN
+import calculatetask
+import communicationtask
 import methods
+import sensortask
+from DQN.agent import DQN
 from data import CommunicationData, CalculateData, SensorData
 from task import Task
-from service.sensortask import SensorTask
-from service.calculatetask import CalculateTask
-from service.communicationtask import CommunicationTask
 
 # 连接到PostgresSQL数据库
 conn_with_router = psycopg2.connect(
@@ -183,11 +183,11 @@ class Router:
                 self.distribution[row][col] = action[row - 1][col - 1]
 
     def put_task(self, task: Task):
-        if isinstance(task, CommunicationTask):
+        if isinstance(task, communicationtask.CommunicationTask):
             self.push_data_communication(task.dataset)
-        elif isinstance(task, CalculateTask):
+        elif isinstance(task, calculatetask.CalculateTask):
             self.push_calculate_task(task.dataset)
-        elif isinstance(task, SensorTask):
+        elif isinstance(task, sensortask.SensorTask):
             self.push_sensor_data(task.dataset)
 
     def pop_data_communication(self) -> Union[List[CommunicationData], None]:
@@ -210,11 +210,10 @@ class Router:
                 index = 0
                 """将时延信息存入数据包"""
                 # 执行插入数据的SQL语句
-                sql = 'INSERT INTO "CommunicationDataDB"(id, start_router_sign, end_router_sign, delay, ' \
-                      'slice_sign, is_loss)' \
-                      'VALUES (%s, %s, %s, %s, %s, %s)'
+                sql = 'INSERT INTO "CommunicationDataDB"(id, router_sign, delay, slice_sign, is_loss )' \
+                      'VALUES (%s, %s, %s, %s, %s)'
                 for item_delay in data.delay_every_step:
-                    values = (data.sign, data.path[index], data.path[index + 1], item_delay, data.slice_sign, False)
+                    values = (data.sign, data.path[index], item_delay, data.slice_sign, False)
                     cursor.execute(sql, values)
                     index += 1
                 """数据包成功传输，成功运输的数据包数量加1"""
@@ -251,11 +250,10 @@ class Router:
                 """将时延信息存入数据包"""
                 # 执行插入数据的SQL语句
                 sql = 'INSERT INTO "CommunicationDataDB"' \
-                      '(id, start_router_sign, end_router_sign, delay, slice_sign, is_loss)' \
-                      'VALUES (%s, %s, %s, %s, %s, %s)'
+                      '(id, router_sign, delay, slice_sign, is_loss)' \
+                      'VALUES (%s, %s, %s, %s, %s)'
                 for item_delay in data_list.delay_every_step:
-                    values = (data_list.sign, data_list.path[index],
-                              data_list.path[index + 1], item_delay, data_list.slice_sign, True)
+                    values = (data_list.sign, data_list.path[index], item_delay, data_list.slice_sign, True)
                     cursor.execute(sql, values)
                     index += 1
                 """负载容量不够，数据包丢失，统计数据"""
@@ -277,10 +275,10 @@ class Router:
                     """将时延信息存入数据包"""
                     # 执行插入数据的SQL语句
                     sql = 'INSERT INTO "CommunicationDataDB"' \
-                          '(id, start_router_sign, end_router_sign, delay, slice_sign, is_loss)' \
-                          'VALUES (%s, %s, %s, %s, %s, %s)'
+                          '(id, router_sign, delay, slice_sign, is_loss)' \
+                          'VALUES (%s, %s, %s, %s, %s)'
                     for item_delay in data.delay_every_step:
-                        values = (data.sign, data.path[index], data.path[index + 1], item_delay, data.slice_sign, True)
+                        values = (data.sign, data.path[index], item_delay, data.slice_sign, True)
                         cursor.execute(sql, values)
                         index += 1
                     """负载容量不够，数据包丢失，统计数据"""
@@ -328,7 +326,7 @@ class Router:
                     self.sensor_reward_log[task.slice_sign] = True
                     sql = 'INSERT INTO "SensorDataDB" (id, router_id, slice_id, is_loss)  ' \
                           'VALUES (%s, %s, %s, %s)'
-                    values = (task.unique_sign, self.sign, task.slice_sign, True)
+                    values = (task.sign, self.sign, task.slice_sign, True)
                     cursor.execute(sql, values)
                     del task
         else:
