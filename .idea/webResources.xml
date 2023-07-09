@@ -7,6 +7,7 @@
           <resourceRoots>
             <path value="file://$PROJECT_DIR$/net_related" />
             <path value="file://$PROJECT_DIR$/DQN" />
+            <path value="file://$PROJECT_DIR$/resource" />
           </resourceRoots>
         </entryData>
       </entry>

@@ -222,8 +222,8 @@ class Router:
                 del data
             else:
                 data_list.append(data)
-            # 提交事务
-            conn_with_router.commit()
+        # 提交事务
+        conn_with_router.commit()
         # 关闭游标
         cursor.close()
         """有数据传数据，没数据传None"""
@@ -286,6 +286,7 @@ class Router:
                     """负载容量不够，数据包丢失，统计数据"""
                     self.communication_loss_data += 1
                     del data
+        conn_with_router.commit()
 
     def deal_calculate_task(self):
         # 创建一个游标对象
@@ -349,9 +350,9 @@ class Router:
         cursor.close()
 
     def deal_sensor_data(self):
+        # 创建一个游标对象
+        cursor = conn_with_router.cursor()
         while self.sensor_queue:
-            # 创建一个游标对象
-            cursor = conn_with_router.cursor()
             """临时承载数据包"""
             temporary_list: List[SensorData] = []
             data: SensorData = self.sensor_queue.pop()
@@ -368,7 +369,7 @@ class Router:
                 cursor.execute(sql, values)
                 del data
             self.sensor_queue.extend(temporary_list)
-            # 提交事务
-            conn_with_router.commit()
-            # 关闭游标
-            cursor.close()
+        # 提交事务
+        conn_with_router.commit()
+        # 关闭游标
+        cursor.close()
