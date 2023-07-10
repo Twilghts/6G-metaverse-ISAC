@@ -32,7 +32,6 @@ class Net:
         self.router_bandwidth = [438, 520, 443, 458, 488, 525, 452, 483, 471, 496, 484, 488,
                                  532, 509, 550, 433]
         """路由器组 为字典，键为路由器的编号，值为所对应的路由器,设置路由器内部可存储的数据容量。"""
-
         self.routers: Dict[int, Router] = {
             number: Router(number, storage=self.router_storage[number], computing_power=self.router_calculate[number],
                            bandwidth=self.router_bandwidth[number]) for number in self.G.nodes
@@ -64,6 +63,15 @@ class Net:
             if dataset:
                 for data in dataset:
                     index = data.path.index(data.current_router) + 1
+                    ports = (data.current_router, data.path[index])
+                    if ports in self.links.keys():
+                        data.delay = data.bandwidth_required / \
+                                     (self.links[ports].bandwidth *
+                                      self.links[ports].communication_distribution[data.slice_sign])
+                    else:
+                        data.delay = data.bandwidth_required / \
+                                     (self.links[ports[::-1]].bandwidth *
+                                      self.links[ports[::-1]].communication_distribution[data.slice_sign])
                     self.routers[data.path[index]].push_data_communication(data)
 
     def show_graph(self):
@@ -109,6 +117,15 @@ class Net:
             link.communication_distribution[1] = 0.7
             link.communication_distribution[2] = 0.15
             link.communication_distribution[3] = 0.15
+
+    def act_in_links(self):
+        for link in self.links.values():
+            link.communication_distribution[1] = (self.routers[link.ports[0]].distribution[1][1] +
+                                                  self.routers[link.ports[1]].distribution[1][1]) / 2
+            link.communication_distribution[2] = (self.routers[link.ports[0]].distribution[1][2] +
+                                                  self.routers[link.ports[1]].distribution[1][2]) / 2
+            link.communication_distribution[3] = (self.routers[link.ports[0]].distribution[1][3] +
+                                                  self.routers[link.ports[1]].distribution[1][3]) / 2
 
     def chose_paths(self) -> Dict[int, List[List[int]]]:
         paths: Dict[int, List[List[int]]] = {

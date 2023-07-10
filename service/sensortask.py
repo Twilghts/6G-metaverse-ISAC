@@ -15,7 +15,7 @@ _conn_with_task = psycopg2.connect(
 )
 _cursor = _conn_with_task.cursor()
 _sql_for_task = 'INSERT INTO task (id, slice, type)  ' \
-       'VALUES (%s, %s, %s)'
+                'VALUES (%s, %s, %s)'
 
 _sql_for_task_data = 'INSERT INTO taskdata (taskid, dataid)  ' \
                      'VALUES (%s, %s)'
@@ -51,26 +51,31 @@ class SensorTask(Task):
         _cursor.execute("SELECT value FROM keyvalues WHERE key = 'dataid'")
         data_sign = _cursor.fetchone()[0]
 
+        values_data = []
+        values_taskdata = []
         for i in range(self.sensor_required):
             data = DataFactory.create_data(TypeOfData.sensor_data, slice_sign=slice_sign, dataid=data_sign)
 
             """向表data中注册该数据包"""
-            values = (data.sign, slice_sign, "SensorData")
-            _cursor.execute(_sql_for_data, values)
+            value_data = (data.sign, slice_sign, "SensorData")
+            values_data.append(value_data)
 
             """向self.dataset中添加数据包，为转发做准备"""
             self.dataset.append(data)
 
             """向表task_data中插入数据"""
-            values = (self.sign, data.sign)
-            _cursor.execute(_sql_for_task_data, values)
+            value_taskdata = (self.sign, data.sign)
+            values_taskdata.append(value_taskdata)
 
             """数据包序号递增"""
             data_sign += 1
 
+        _cursor.executemany(_sql_for_data, values_data)
+        _cursor.executemany(_sql_for_task_data, values_taskdata)
         """更新data最新的id"""
-        data = (data_sign, )
+        data = (data_sign,)
         _cursor.execute(_update_keyvalue, data)
+        _conn_with_task.commit()
 
     def __repr__(self):
         return f"SensorTask,要求的感知资源为:{self.sensor_required}"

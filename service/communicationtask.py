@@ -42,8 +42,8 @@ class CommunicationTask(Task):
                         "WHERE key = 'taskid'")
 
         """向表Task中注册该任务"""
-        values = (self.sign, slice_sign, "CommunicationTask")
-        _cursor.execute(_sql_for_task, values)
+        values_data = (self.sign, slice_sign, "CommunicationTask")
+        _cursor.execute(_sql_for_task, values_data)
 
         self.communication_required: int = communication_required
 
@@ -53,28 +53,29 @@ class CommunicationTask(Task):
         """查询最新的dataid并将其给data赋值"""
         _cursor.execute("SELECT value FROM keyvalues WHERE key = 'dataid'")
         data_sign = _cursor.fetchone()[0]
-
+        values_data = []
+        values_taskdata = []
         for i in range(self.communication_required):
             data = DataFactory.create_data(TypeOfData.communication_data,
                                            slice_sign=slice_sign, dataid=data_sign, path=path)
-
             """向表data中注册该数据包"""
-            values = (data.sign, slice_sign, "CommunicationData")
-            _cursor.execute(_sql_for_data, values)
+            value_data = (data.sign, slice_sign, "CommunicationData")
+            values_data.append(value_data)
 
             """向self.dataset中添加数据包，为转发做准备"""
             self.dataset.append(data)
 
             """向表task_data中插入数据"""
-            values = (self.sign, data.sign)
-            _cursor.execute(_sql_for_task_data, values)
-
+            value_taskdata = (self.sign, data.sign)
+            values_taskdata.append(value_taskdata)
             """数据包序号递增"""
             data_sign += 1
-
+        _cursor.executemany(_sql_for_data, values_data)
+        _cursor.executemany(_sql_for_task_data, values_taskdata)
         """更新data最新的id"""
-        data = (data_sign, )
+        data = (data_sign,)
         _cursor.execute(_update_keyvalue, data)
+        _conn_with_task.commit()
 
     def __repr__(self):
         return f"CommunicationTask,要求的通信资源为:{self.communication_required}"

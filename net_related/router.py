@@ -24,6 +24,15 @@ conn_with_router = psycopg2.connect(
 )
 # 创建一个游标对象
 cursor = conn_with_router.cursor()
+# 执行插入数据的SQL语句
+sql_communication = 'INSERT INTO "CommunicationDataDB"(id, router_sign, delay, slice_sign, is_loss )' \
+                    'VALUES (%s, %s, %s, %s, %s)'
+
+sql_calculate = 'INSERT INTO "CalculateDataDB" (id, router_id, delay, slice_sign)  ' \
+                'VALUES (%s, %s, %s, %s)'
+
+sql_sensor = 'INSERT INTO "SensorDataDB" (id, router_id, slice_id, is_loss)  ' \
+             'VALUES (%s, %s, %s, %s)'
 
 
 class Router:
@@ -194,8 +203,8 @@ class Router:
 
     def pop_data_communication(self) -> Union[List[CommunicationData], None]:
         data_list: List[CommunicationData] = []
-
         waiting_time = 0
+        values = []
         while self.cache_queue_communication:
             data: CommunicationData = self.cache_queue_communication.pop()
             """释放对应切片在通信资源上的负载"""
@@ -210,12 +219,9 @@ class Router:
                 """代表数据包一路上经过的路由器序号"""
                 index = 0
                 """将时延信息存入数据包"""
-                # 执行插入数据的SQL语句
-                sql = 'INSERT INTO "CommunicationDataDB"(id, router_sign, delay, slice_sign, is_loss )' \
-                      'VALUES (%s, %s, %s, %s, %s)'
                 for item_delay in data.delay_every_step:
-                    values = (data.sign, data.path[index], item_delay, data.slice_sign, False)
-                    cursor.execute(sql, values)
+                    value = (data.sign, data.path[index], item_delay, data.slice_sign, False)
+                    values.append(value)
                     index += 1
                 """数据包成功传输，成功运输的数据包数量加1"""
                 self.communication_successful_data += 1
@@ -224,12 +230,15 @@ class Router:
                 data_list.append(data)
         """有数据传数据，没数据传None"""
         if data_list:
+            cursor.executemany(sql_communication, values)
+            conn_with_router.commit()
             return data_list
         else:
             return None
 
     def push_data_communication(self, data_list: Union[List[CommunicationData], CommunicationData]):
         """如果是单个的数据包就单独处理"""
+        values = []
         if not isinstance(data_list, Iterable):
             """更新数据包状态，为下一次转发做准备"""
             data_list.current_router = self.sign
@@ -242,15 +251,12 @@ class Router:
             else:
                 """代表数据包一路上经过的路由器序号"""
                 index = 0
-                """将时延信息存入数据包"""
-                # 执行插入数据的SQL语句
-                sql = 'INSERT INTO "CommunicationDataDB"' \
-                      '(id, router_sign, delay, slice_sign, is_loss)' \
-                      'VALUES (%s, %s, %s, %s, %s)'
+                """将时延信息存入数据包"""  # 执行插入数据的SQL语句
                 for item_delay in data_list.delay_every_step:
-                    values = (data_list.sign, data_list.path[index], item_delay, data_list.slice_sign, True)
-                    cursor.execute(sql, values)
+                    value = (data_list.sign, data_list.path[index], item_delay, data_list.slice_sign, True)
+                    values.append(value)
                     index += 1
+                cursor.executemany(sql_communication, values)
                 """负载容量不够，数据包丢失，统计数据"""
                 self.communication_loss_data += 1
                 del data_list
@@ -268,30 +274,30 @@ class Router:
                     """代表数据包一路上经过的路由器序号"""
                     index = 0
                     """将时延信息存入数据包"""
-                    # 执行插入数据的SQL语句
-                    sql = 'INSERT INTO "CommunicationDataDB"' \
-                          '(id, router_sign, delay, slice_sign, is_loss)' \
-                          'VALUES (%s, %s, %s, %s, %s)'
                     for item_delay in data.delay_every_step:
-                        values = (data.sign, data.path[index], item_delay, data.slice_sign, True)
-                        cursor.execute(sql, values)
+                        value = (data.sign, data.path[index], item_delay, data.slice_sign, True)
+                        values.append(value)
                         index += 1
                     """负载容量不够，数据包丢失，统计数据"""
                     self.communication_loss_data += 1
                     del data
+            cursor.executemany(sql_communication, values)
+        conn_with_router.commit()
 
     def deal_calculate_task(self):
         waiting_time = 0
+        values = []
         while self.calculate_queue:
             data: CalculateData = self.calculate_queue.pop()
             waiting_time += data.calculate_required / (self.distribution[2][data.slice_sign] * self.computing_power)
             """为计算奖励值做准备"""
             self.calculate_reward_log[data.slice_sign].append(waiting_time)
-            sql = 'INSERT INTO "CalculateDataDB" (id, router_id, delay, slice_sign)  ' \
-                  'VALUES (%s, %s, %s, %s)'
-            values = (data.sign, self.sign, waiting_time, data.slice_sign)
-            cursor.execute(sql, values)
+            value = (data.sign, self.sign, waiting_time, data.slice_sign)
+            values.append(value)
             del data
+        if values:
+            cursor.executemany(sql_calculate, values)
+            conn_with_router.commit()
 
     def push_calculate_task(self, tasks: Union[CalculateData, List[CalculateData]]):
         if isinstance(tasks, Iterable):
@@ -301,6 +307,7 @@ class Router:
 
     def push_sensor_data(self, dataset: Union[SensorData, List[SensorData]]):
         if isinstance(dataset, Iterable):
+            values = []
             for task in dataset:
                 """存储资源不够则丢包，够则存储"""
                 if task.storage_required + self.sensor_load_slice[task.slice_sign] <= \
@@ -310,11 +317,10 @@ class Router:
                     self.sensor_loss_number += 1
                     """为计算奖励值做准备"""
                     self.sensor_reward_log[task.slice_sign] = True
-                    sql = 'INSERT INTO "SensorDataDB" (id, router_id, slice_id, is_loss)  ' \
-                          'VALUES (%s, %s, %s, %s)'
-                    values = (task.sign, self.sign, task.slice_sign, True)
-                    cursor.execute(sql, values)
+                    value = (task.sign, self.sign, task.slice_sign, True)
+                    values.append(value)
                     del task
+            cursor.executemany(sql_sensor, values)
         else:
             if dataset.storage_required + self.sensor_load_slice[dataset.slice_sign] <= \
                     (self.distribution[3][dataset.slice_sign] * self.storage):
@@ -323,16 +329,15 @@ class Router:
                 self.sensor_loss_number += 1
                 """为计算奖励值做准备"""
                 self.sensor_reward_log[dataset.slice_sign] = True
-                sql = 'INSERT INTO "SensorDataDB" (id, router_id, slice_id, is_loss)  ' \
-                      'VALUES (%s, %s, %s, %s)'
-                values = (dataset.sign, self.sign, dataset.slice_sign, True)
-                cursor.execute(sql, values)
+                cursor.execute(sql_sensor, (dataset.sign, self.sign, dataset.slice_sign, True))
                 del dataset
+        conn_with_router.commit()
 
     def deal_sensor_data(self):
+        values = []
+        temporary_list: List[SensorData] = []
         while self.sensor_queue:
             """临时承载数据包"""
-            temporary_list: List[SensorData] = []
             data: SensorData = self.sensor_queue.pop()
             data.count -= 1
             """三次标记不够继续存储"""
@@ -341,9 +346,10 @@ class Router:
             else:
                 """否则销毁该数据，并且记做该数据成功完成任务，存入数据库"""
                 self.sensor_success_number += 1
-                sql = 'INSERT INTO "SensorDataDB" (id, router_id, slice_id, is_loss)  ' \
-                      'VALUES (%s, %s, %s, %s)'
-                values = (data.sign, self.sign, data.slice_sign, False)
-                cursor.execute(sql, values)
+                value = (data.sign, self.sign, data.slice_sign, False)
+                values.append(value)
                 del data
-            self.sensor_queue.extend(temporary_list)
+        self.sensor_queue.extend(temporary_list)
+        if values:
+            cursor.executemany(sql_sensor, values)
+            conn_with_router.commit()

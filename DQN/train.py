@@ -54,6 +54,9 @@ if __name__ == '__main__':
                 net.deal_data()
         for router in net.routers.values():
             router.markov()
+        """改变链路的带宽资源分配情况"""
+        net.act_in_links()
+        """选择通信链路的任务路径"""
         paths = net.chose_paths()
         task_set |= build_task_set(50, paths)
 
@@ -75,6 +78,10 @@ if __name__ == '__main__':
                     net.deal_data()
             for router in net.routers.values():
                 router.markov()
+            """改变链路的带宽资源分配情况"""
+            net.act_in_links()
+            """选择通信链路的任务路径"""
+            paths = net.chose_paths()
             task_set |= build_task_set(75, paths)
 
         print(time.perf_counter() - start_time)
