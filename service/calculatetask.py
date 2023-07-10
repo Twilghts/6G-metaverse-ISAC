@@ -1,6 +1,7 @@
 import random
+import threading
 from typing import List
-import multiprocessing
+
 import psycopg2
 
 from data import DataFactory, TypeOfData
@@ -26,14 +27,11 @@ _sql_for_data = 'INSERT INTO data (id, slice, type)  ' \
                 'VALUES (%s, %s, %s)'
 
 
-def registration_db(sign: int, slice_sign: int, dataset: List):
-    """更新taskid的值，以便下次使用"""
-    _cursor.execute("UPDATE keyvalues "
-                    "SET value = (value + 1)"
-                    "WHERE key = 'taskid'")
+def registration_db(sign: int, slice_sign: int, dataset: List, conn):
+    cursor = conn.cursor()
     """向表Task中注册该任务"""
     values = (sign, slice_sign, "CalculateTask")
-    _cursor.execute(_sql_for_task, values)
+    cursor.execute(_sql_for_task, values)
     """存储属于该任务的数据包"""
     values_data = []
     values_taskdata = []
@@ -44,12 +42,10 @@ def registration_db(sign: int, slice_sign: int, dataset: List):
         """向表task_data中插入数据"""
         value_taskdata = (sign, data.sign)
         values_taskdata.append(value_taskdata)
-    _cursor.executemany(_sql_for_data, values_data)
-    _cursor.executemany(_sql_for_task_data, values_taskdata)
-    """更新data最新的id"""
-    data = (dataset[-1].sign,)
-    _cursor.execute(_update_keyvalue, data)
-    _conn_with_task.commit()
+    cursor.executemany(_sql_for_data, values_data)
+    cursor.executemany(_sql_for_task_data, values_taskdata)
+    conn.commit()
+    cursor.close()
 
 
 class CalculateTask(Task):
@@ -59,6 +55,7 @@ class CalculateTask(Task):
         """查询最新的taskid并将其赋值给这个任务的id"""
         _cursor.execute("SELECT value FROM keyvalues WHERE key = 'taskid'")
         self.sign = _cursor.fetchone()[0]
+
         """查询最新的dataid并将其给data赋值"""
         _cursor.execute("SELECT value FROM keyvalues WHERE key = 'dataid'")
         data_sign = _cursor.fetchone()[0]
@@ -69,8 +66,15 @@ class CalculateTask(Task):
             self.dataset.append(data)
             """数据包序号递增"""
             data_sign += 1
-        process = multiprocessing.Process(target=registration_db, args=(self.sign, slice_sign, self.dataset))
+        process = threading.Thread(target=registration_db, args=(self.sign, slice_sign,
+                                                                 self.dataset, _conn_with_task))
         process.start()
+        """更新taskid的值，以便下次使用"""
+        _cursor.execute("UPDATE keyvalues "
+                        "SET value = (value + 1)"
+                        "WHERE key = 'taskid'")
+        _cursor.execute(_update_keyvalue, (data_sign,))
+        _conn_with_task.commit()
 
     def __repr__(self):
         return f"CalculateTask,要求的计算资源为:{self.calculate_required}"
