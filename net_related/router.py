@@ -334,6 +334,7 @@ class Router:
                 if task.storage_required + self.sensor_load_slice[task.slice_sign] <= \
                         (self.distribution[3][task.slice_sign] * self.storage):
                     self.sensor_queue.append(task)
+                    self.sensor_load_slice[task.slice_sign] += task.storage_required
                 else:
                     self.sensor_loss_number += 1
                     """为计算奖励值做准备"""
@@ -348,6 +349,7 @@ class Router:
             if dataset.storage_required + self.sensor_load_slice[dataset.slice_sign] <= \
                     (self.distribution[3][dataset.slice_sign] * self.storage):
                 self.calculate_queue.append(dataset)
+                self.sensor_load_slice[dataset.slice_sign] += dataset.storage_required
             else:
                 self.sensor_loss_number += 1
                 """为计算奖励值做准备"""
@@ -367,6 +369,7 @@ class Router:
                 temporary_list.append(data)
             else:
                 """否则销毁该数据，并且记做该数据成功完成任务，存入数据库"""
+                self.sensor_load_slice[data.slice_sign] -= data.storage_required
                 self.sensor_success_number += 1
                 value = (data.sign, self.sign, data.slice_sign, False)
                 values.append(value)
