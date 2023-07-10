@@ -237,6 +237,7 @@ class Router:
                 self.communication_successful_data += 1
                 del data
                 self.communication_values.extend(values)
+                values.clear()
             else:
                 data_list.append(data)
         """有数据传数据，没数据传None"""
@@ -296,6 +297,7 @@ class Router:
                     """负载容量不够，数据包丢失，统计数据"""
                     self.communication_loss_data += 1
                     self.communication_values.extend(values)
+                    values.clear()
                     del data
             # process = threading.Thread(target=registration_db,
             #                            args=(sql_communication, values, conn_with_router))
