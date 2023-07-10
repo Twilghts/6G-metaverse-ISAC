@@ -1,6 +1,5 @@
 import copy
 import random
-import threading
 from collections import deque
 from collections.abc import Iterable
 from typing import List, Union, Dict
@@ -25,8 +24,8 @@ conn_with_router = psycopg2.connect(
     password="rkw2536153"
 )
 cursor_pool = []
-for number in range(10000):
-    cursor_pool.append(conn_with_router.cursor())
+# for _number in range(10000):
+#     cursor_pool.append(conn_with_router.cursor())
 # 执行插入数据的SQL语句
 sql_communication = 'INSERT INTO "CommunicationDataDB"(id, router_sign, delay, slice_sign, is_loss )' \
                     'VALUES (%s, %s, %s, %s, %s)'
@@ -45,6 +44,9 @@ def registration_db(sql, values, conn):
 
 class Router:
     def __init__(self, sign: int, storage: int = 15000, computing_power: int = 100, bandwidth: int = 500):
+        self.communication_values = []
+        self.calculate_values = []
+        self.sensor_values = []
         self.sign: int = sign  # 路由器的序号
         self.storage: float = storage
         self.computing_power: float = computing_power
@@ -234,13 +236,14 @@ class Router:
                 """数据包成功传输，成功运输的数据包数量加1"""
                 self.communication_successful_data += 1
                 del data
+                self.communication_values.extend(values)
             else:
                 data_list.append(data)
         """有数据传数据，没数据传None"""
         if data_list:
-            process = threading.Thread(target=registration_db,
-                                       args=(sql_communication, values, conn_with_router))
-            process.start()
+            # process = threading.Thread(target=registration_db,
+            #                            args=(sql_communication, values, conn_with_router))
+            # process.start()
             return data_list
         else:
             return None
@@ -265,9 +268,10 @@ class Router:
                     value = (data_list.sign, data_list.path[index], item_delay, data_list.slice_sign, True)
                     values.append(value)
                     index += 1
-                process = threading.Thread(target=registration_db,
-                                           args=(sql_communication, values, conn_with_router))
-                process.start()
+                # process = threading.Thread(target=registration_db,
+                #                            args=(sql_communication, values, conn_with_router))
+                # process.start()
+                self.communication_values.extend(values)
                 """负载容量不够，数据包丢失，统计数据"""
                 self.communication_loss_data += 1
                 del data_list
@@ -291,10 +295,11 @@ class Router:
                         index += 1
                     """负载容量不够，数据包丢失，统计数据"""
                     self.communication_loss_data += 1
+                    self.communication_values.extend(values)
                     del data
-            process = threading.Thread(target=registration_db,
-                                       args=(sql_communication, values, conn_with_router))
-            process.start()
+            # process = threading.Thread(target=registration_db,
+            #                            args=(sql_communication, values, conn_with_router))
+            # process.start()
 
     def deal_calculate_task(self):
         waiting_time = 0
@@ -308,9 +313,10 @@ class Router:
             values.append(value)
             del data
         if values:
-            process = threading.Thread(target=registration_db,
-                                       args=(sql_calculate, values, conn_with_router))
-            process.start()
+            # process = threading.Thread(target=registration_db,
+            #                            args=(sql_calculate, values, conn_with_router))
+            # process.start()
+            self.calculate_values.extend(values)
 
     def push_calculate_task(self, tasks: Union[CalculateData, List[CalculateData]]):
         if isinstance(tasks, Iterable):
@@ -333,8 +339,9 @@ class Router:
                     value = (task.sign, self.sign, task.slice_sign, True)
                     values.append(value)
                     del task
-            process = threading.Thread(target=registration_db, args=(sql_sensor, values, conn_with_router))
-            process.start()
+            # process = threading.Thread(target=registration_db, args=(sql_sensor, values, conn_with_router))
+            # process.start()
+            self.sensor_values.extend(values)
         else:
             if dataset.storage_required + self.sensor_load_slice[dataset.slice_sign] <= \
                     (self.distribution[3][dataset.slice_sign] * self.storage):
@@ -343,9 +350,8 @@ class Router:
                 self.sensor_loss_number += 1
                 """为计算奖励值做准备"""
                 self.sensor_reward_log[dataset.slice_sign] = True
-                random.choice(cursor_pool).execute(sql_sensor, (dataset.sign, self.sign, dataset.slice_sign, True))
+                self.sensor_values.append((dataset.sign, self.sign, dataset.slice_sign, True))
                 del dataset
-        conn_with_router.commit()
 
     def deal_sensor_data(self):
         values = []
@@ -365,5 +371,6 @@ class Router:
                 del data
         self.sensor_queue.extend(temporary_list)
         if values:
-            process = threading.Thread(target=registration_db, args=(sql_sensor, values, conn_with_router))
-            process.start()
+            # process = threading.Thread(target=registration_db, args=(sql_sensor, values, conn_with_router))
+            # process.start()
+            self.sensor_values.extend(values)

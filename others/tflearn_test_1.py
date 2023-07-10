@@ -373,9 +373,9 @@ def build_summaries():
 
 def get_num_actions():
     """
-    Returns the number of possible actions for the given atari game
+    Returns the _number of possible actions for the given atari game
     """
-    # Figure out number of actions from gym env
+    # Figure out _number of actions from gym env
     env = gym.make(game)
     num_actions = env.action_space.n
     return num_actions
