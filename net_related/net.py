@@ -24,8 +24,8 @@ class Net:
             number: int(number) for number in self.G.nodes
         }
         self.G: nx.Graph = nx.relabel_nodes(self.G, relabel_table)
-        self.router_storage = [19060, 8763, 16297, 22901, 13735, 13530, 21507, 19683, 3692, 22855, 28427, 12424,
-                               13628, 12968, 22011, 10952]
+        self.router_storage = [2755, 3116, 3424, 2208, 3646, 3267, 3011, 3473, 4026, 3980, 3563, 3835, 2586, 2212,
+                               3638, 4207]
         self.router_storage.sort()
         self.router_calculate = [143, 167, 115, 196, 168, 135, 186, 53, 151, 47, 116, 107, 83, 80, 135, 165]
         self.router_calculate.sort(reverse=True)

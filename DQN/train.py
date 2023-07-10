@@ -169,3 +169,31 @@ if __name__ == '__main__':
                                                                          _conn_in_train, random.choice(_cursor_pool)))
                 process.start()
                 router.sensor_values.clear()
+
+    process = threading.Thread(target=registration_db,
+                               args=(_sql_data, data_values, _conn_in_train, random.choice(_cursor_pool)))
+    process.start()
+    data_values.clear()
+    process = threading.Thread(target=registration_db,
+                               args=(_sql_task, task_values, _conn_in_train, random.choice(_cursor_pool)))
+    process.start()
+    task_values.clear()
+    process = threading.Thread(target=registration_db, args=(_sql_task_data, task_data_values, _conn_in_train,
+                                                             random.choice(_cursor_pool)))
+    process.start()
+    task_data_values.clear()
+    for router in net.routers.values():
+        process = threading.Thread(target=registration_db, args=(sql_communication, router.communication_values,
+                                                                 _conn_in_train, random.choice(_cursor_pool)))
+        process.start()
+        router.communication_values.clear()
+        process = threading.Thread(target=registration_db, args=(sql_calculate, router.calculate_values,
+                                                                 _conn_in_train, random.choice(_cursor_pool)))
+        process.start()
+        router.calculate_values.clear()
+        process = threading.Thread(target=registration_db, args=(sql_sensor, router.sensor_values,
+                                                                 _conn_in_train, random.choice(_cursor_pool)))
+        process.start()
+        router.sensor_values.clear()
+        filename = "model_1_" + str(router.sign)
+        router.agent.target_model.save(f"../resource/{filename}")
