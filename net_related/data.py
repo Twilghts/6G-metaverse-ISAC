@@ -8,6 +8,7 @@ class Data(ABC):
     def __init__(self, slice_sign: int, dataid: int):
         self.sign = dataid
         self.slice_sign = slice_sign
+        self.type = None
         self.current_router: int = -1
 
     @abstractmethod
@@ -22,6 +23,7 @@ class Data(ABC):
 class CommunicationData(Data):
     def __init__(self, slice_sign: int, dataid: int, bandwidth_required: int = 1, path: Union[List[int], None] = None):
         super().__init__(slice_sign, dataid)
+        self.type = "CommunicationData"
         self.path: Union[List[int], None] = path
         self.bandwidth_required: int = bandwidth_required
         self.delay: int = 0  # 代表了数据包在上一段链路的时延
@@ -37,6 +39,7 @@ class CommunicationData(Data):
 class CalculateData(Data):
     def __init__(self, slice_sign: int, dataid: int, calculate_required: int = 1):
         super().__init__(slice_sign, dataid)
+        self.type = "CalculateData"
         self.calculate_required: int = calculate_required
         self.delay: int = 0
 
@@ -50,6 +53,7 @@ class CalculateData(Data):
 class SensorData(Data):
     def __init__(self, slice_sign: int, dataid: int, storage_required: int = 1, count=3):
         super().__init__(slice_sign=slice_sign, dataid=dataid)
+        self.type = "SensorData"
         self.storage_required: int = storage_required
         self.count = count
 
