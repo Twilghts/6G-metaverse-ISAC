@@ -1,5 +1,4 @@
 import random
-import threading
 import time
 from typing import Set, Dict, List, Union, Tuple
 
@@ -58,7 +57,8 @@ if __name__ == '__main__':
     _cursor_pool = []
     for number in range(50):
         _cursor_pool.append(_conn_in_train.cursor())
-    # _update_keyvalue = "UPDATE keyvalues SET value = %s WHERE key = 'dataid'"
+    _update_keyvalue_task = "UPDATE keyvalues SET value = %s WHERE key = 'taskid'"
+    _update_keyvalue_data = "UPDATE keyvalues SET value = %s WHERE key = 'dataid'"
     _sql_task = 'INSERT INTO task (id, slice, type)  ' \
                 'VALUES (%s, %s, %s)'
 
@@ -68,17 +68,19 @@ if __name__ == '__main__':
     _sql_data = 'INSERT INTO data (id, slice, type)  ' \
                 'VALUES (%s, %s, %s)'
 
-    sql_communication = 'INSERT INTO "CommunicationDataDB"(id, router_sign, delay, slice_sign, is_loss )' \
-                        'VALUES (%s, %s, %s, %s, %s)'
+    _sql_communication = 'INSERT INTO "CommunicationDataDB"(id, router_sign, delay, slice_sign, is_loss )' \
+                         'VALUES (%s, %s, %s, %s, %s)'
 
-    sql_calculate = 'INSERT INTO "CalculateDataDB" (id, router_id, delay, slice_sign)  ' \
-                    'VALUES (%s, %s, %s, %s)'
+    _sql_calculate = 'INSERT INTO "CalculateDataDB" (id, router_id, delay, slice_sign)  ' \
+                     'VALUES (%s, %s, %s, %s)'
 
-    sql_sensor = 'INSERT INTO "SensorDataDB" (id, router_id, slice_id, is_loss)  ' \
-                 'VALUES (%s, %s, %s, %s)'
+    _sql_sensor = 'INSERT INTO "SensorDataDB" (id, router_id, slice_id, is_loss)  ' \
+                  'VALUES (%s, %s, %s, %s)'
 
-    task_id = 1
-    data_id = 1
+    _cursor_pool[0].execute("SELECT * FROM keyvalues where key = 'taskid'")
+    task_id = _cursor_pool[0].fetchone()[0]
+    _cursor_pool[0].execute("SELECT value FROM keyvalues where key = 'dataid'")
+    data_id = _cursor_pool[0].fetchone()[0]
     data_values = []
     task_values = []
     task_data_values = []
@@ -87,14 +89,15 @@ if __name__ == '__main__':
     net.initialize()
     paths = net.chose_paths()
     task_set, task_id, data_id = build_task_set(200, paths, _task_id=task_id, _data_id=data_id)
+    for task in task_set:
+        task_values.append((task.task_id, task.slice_id, task.type))
+        for data in task.dataset:
+            task_data_values.append((task.task_id, data.sign))
+            data_values.append((data.sign, data.slice_sign, data.type))
     """准备数据"""
     for i in range(170):
         for j in range(50):
             task = task_set.pop()
-            task_values.append((task.task_id, task.slice_id, task.type))
-            for data in task.dataset:
-                task_data_values.append((task.task_id, data.sign))
-                data_values.append((data.sign, data.slice_sign, data.type))
             if isinstance(task, communicationtask.CommunicationTask):
                 net.routers[task.path[0]].put_task(task)
             else:
@@ -108,6 +111,12 @@ if __name__ == '__main__':
         """选择通信链路的任务路径"""
         paths = net.chose_paths()
         tem_set, task_id, data_id = build_task_set(50, paths, _task_id=task_id, _data_id=data_id)
+        """注册新生成的任务和数据"""
+        for task in tem_set:
+            task_values.append((task.task_id, task.slice_id, task.type))
+            for data in task.dataset:
+                task_data_values.append((task.task_id, data.sign))
+                data_values.append((data.sign, data.slice_sign, data.type))
         task_set |= tem_set
         del tem_set
 
@@ -121,10 +130,6 @@ if __name__ == '__main__':
         for i in range(75):
             for j in range(50):
                 task = task_set.pop()
-                task_values.append((task.task_id, task.slice_id, task.type))
-                for data in task.dataset:
-                    task_data_values.append((task.task_id, data.sign))
-                    data_values.append((data.sign, data.slice_sign, data.type))
                 if isinstance(task, communicationtask.CommunicationTask):
                     net.routers[task.path[0]].put_task(task)
                 else:
@@ -138,68 +143,48 @@ if __name__ == '__main__':
             """选择通信链路的任务路径"""
             paths = net.chose_paths()
             tem_set, task_id, data_id = build_task_set(75, paths, _task_id=task_id, _data_id=data_id)
+            """注册新生成的任务和数据"""
+            for task in tem_set:
+                task_values.append((task.task_id, task.slice_id, task.type))
+                for data in task.dataset:
+                    task_data_values.append((task.task_id, data.sign))
+                    data_values.append((data.sign, data.slice_sign, data.type))
             task_set |= tem_set
             del tem_set
         print(time.perf_counter() - start_time)
         memory_usage = psutil.virtual_memory()
         print(f"Memory Usage: {memory_usage.percent}%")
         if memory_usage.percent >= 80:
-            process_data = threading.Thread(target=registration_db,
-                                            args=(_sql_data, data_values, _conn_in_train, random.choice(_cursor_pool)))
-            process_data.start()
+            registration_db(_sql_data, data_values, _conn_in_train, random.choice(_cursor_pool))
             data_values.clear()
-            process_task = threading.Thread(target=registration_db,
-                                            args=(_sql_task, task_values, _conn_in_train, random.choice(_cursor_pool)))
-            process_task.start()
+            registration_db(_sql_task, task_values, _conn_in_train, random.choice(_cursor_pool))
             task_values.clear()
-            """防止违反外键约束"""
-            process_data.join()
-            process_task.join()
-            process = threading.Thread(target=registration_db, args=(_sql_task_data, task_data_values, _conn_in_train,
-                                                                     random.choice(_cursor_pool)))
-            process.start()
+            registration_db(_sql_task_data, task_data_values, _conn_in_train, random.choice(_cursor_pool))
             task_data_values.clear()
             for router in net.routers.values():
-                process = threading.Thread(target=registration_db, args=(sql_communication, router.communication_values,
-                                                                         _conn_in_train, random.choice(_cursor_pool)))
-                process.start()
+                registration_db(_sql_communication, router.communication_values, _conn_in_train,
+                                random.choice(_cursor_pool))
                 router.communication_values.clear()
-                process = threading.Thread(target=registration_db, args=(sql_calculate, router.calculate_values,
-                                                                         _conn_in_train, random.choice(_cursor_pool)))
-                process.start()
+                registration_db(_sql_calculate, router.calculate_values, _conn_in_train, random.choice(_cursor_pool))
                 router.calculate_values.clear()
-                process = threading.Thread(target=registration_db, args=(sql_sensor, router.sensor_values,
-                                                                         _conn_in_train, random.choice(_cursor_pool)))
-                process.start()
+                registration_db(_sql_sensor, router.sensor_values, _conn_in_train, random.choice(_cursor_pool))
                 router.sensor_values.clear()
-
-    process_data = threading.Thread(target=registration_db,
-                                    args=(_sql_data, data_values, _conn_in_train, random.choice(_cursor_pool)))
-    process_data.start()
+    """全部结束后的统一信息存储"""
+    registration_db(_sql_data, data_values, _conn_in_train, random.choice(_cursor_pool))
     data_values.clear()
-    process_task = threading.Thread(target=registration_db,
-                                    args=(_sql_task, task_values, _conn_in_train, random.choice(_cursor_pool)))
-    process_task.start()
+    registration_db(_sql_task, task_values, _conn_in_train, random.choice(_cursor_pool))
     task_values.clear()
-    """防止违反外键约束"""
-    process_data.join()
-    process_task.join()
-    process = threading.Thread(target=registration_db, args=(_sql_task_data, task_data_values, _conn_in_train,
-                                                             random.choice(_cursor_pool)))
-    process.start()
+    registration_db(_sql_task_data, task_data_values, _conn_in_train, random.choice(_cursor_pool))
     task_data_values.clear()
     for router in net.routers.values():
-        process = threading.Thread(target=registration_db, args=(sql_communication, router.communication_values,
-                                                                 _conn_in_train, random.choice(_cursor_pool)))
-        process.start()
+        registration_db(_sql_communication, router.communication_values, _conn_in_train, random.choice(_cursor_pool))
         router.communication_values.clear()
-        process = threading.Thread(target=registration_db, args=(sql_calculate, router.calculate_values,
-                                                                 _conn_in_train, random.choice(_cursor_pool)))
-        process.start()
+        registration_db(_sql_calculate, router.calculate_values, _conn_in_train, random.choice(_cursor_pool))
         router.calculate_values.clear()
-        process = threading.Thread(target=registration_db, args=(sql_sensor, router.sensor_values,
-                                                                 _conn_in_train, random.choice(_cursor_pool)))
-        process.start()
+        registration_db(_sql_sensor, router.sensor_values, _conn_in_train, random.choice(_cursor_pool))
         router.sensor_values.clear()
-        filename = "model_2_" + str(router.sign)
+        filename = "model_3_" + str(router.sign)
         router.agent.target_model.save(f"../resource/{filename}")
+    _cursor_pool[0].execute(_update_keyvalue_task, (task_id,))
+    _cursor_pool[0].execute(_update_keyvalue_data, (data_id,))
+    _conn_in_train.commit()

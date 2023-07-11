@@ -119,7 +119,7 @@ class Router:
     def __str__(self):
         return f'Router:{self.sign},带宽资源为:{self.bandwidth},计算资源为:{self.computing_power},存储资源为:{self.storage}'
 
-    def markov(self):
+    def markov(self, is_dqn: bool = True):
         """更新状态，选择动作，计算奖励，向回放缓存中添加数据，完成一次马尔可夫过程，处理部分数据"""
         """以下为计算奖励值的过程"""
         sensor_slice_1 = self.sensor_reward_log[1]
@@ -158,9 +158,6 @@ class Router:
             self.calculate_reward_log[3].clear()
         else:
             calculate_slice_3 = -1
-        reword = methods.reword(((communication_slice_1, communication_slice_2, communication_slice_3),
-                                 (calculate_slice_1, calculate_slice_2, calculate_slice_3),
-                                 (sensor_slice_1, sensor_slice_2, sensor_slice_3)))
         """以下为计算状态的过程,计算奖励值的参数即为状态，即根据状态得出奖励值"""
         state = copy.deepcopy(self.state)
         state[0][0] = communication_slice_1
@@ -182,17 +179,21 @@ class Router:
         else:
             state[2][2] = 0
         """如果智能体第一次运行则不向回放缓存中存储信息，只更新当前状态，动作和应用这次动作"""
-        if self.state[0][0] == -2:
-            self.state = copy.deepcopy(state)
-            action, self.action_index = self.agent.act(np.array(self.state).reshape(1, 9))
-            self.apply_action(action=action)
-            return 42
-        else:
-            self.agent.remember(np.array(self.state).reshape(1, 9), self.action_index,
-                                reword, np.array(state).reshape(1, 9))
-            self.state = copy.deepcopy(state)
-            action, self.action_index = self.agent.act(np.array(self.state).reshape(1, 9))
-            self.apply_action(action=action)
+        if is_dqn:
+            if self.state[0][0] == -2:
+                self.state = copy.deepcopy(state)
+                action, self.action_index = self.agent.act(np.array(self.state).reshape(1, 9))
+                self.apply_action(action=action)
+                return 42
+            else:
+                reword = methods.reword(((communication_slice_1, communication_slice_2, communication_slice_3),
+                                         (calculate_slice_1, calculate_slice_2, calculate_slice_3),
+                                         (sensor_slice_1, sensor_slice_2, sensor_slice_3)))
+                self.agent.remember(np.array(self.state).reshape(1, 9), self.action_index,
+                                    reword, np.array(state).reshape(1, 9))
+                self.state = copy.deepcopy(state)
+                action, self.action_index = self.agent.act(np.array(self.state).reshape(1, 9))
+                self.apply_action(action=action)
 
     def apply_action(self, action: List[List[float]]):
         """处理上一个状态遗留下来的数据，并且利用动作更新分配标准"""
@@ -243,7 +244,7 @@ class Router:
         """有数据传数据，没数据传None"""
         if data_list:
             # process = threading.Thread(target=registration_db,
-            #                            args=(sql_communication, values, conn_with_router))
+            #                            args=(_sql_communication, values, conn_with_router))
             # process.start()
             return data_list
         else:
@@ -270,7 +271,7 @@ class Router:
                     values.append(value)
                     index += 1
                 # process = threading.Thread(target=registration_db,
-                #                            args=(sql_communication, values, conn_with_router))
+                #                            args=(_sql_communication, values, conn_with_router))
                 # process.start()
                 self.communication_values.extend(values)
                 """负载容量不够，数据包丢失，统计数据"""
@@ -300,7 +301,7 @@ class Router:
                     values.clear()
                     del data
             # process = threading.Thread(target=registration_db,
-            #                            args=(sql_communication, values, conn_with_router))
+            #                            args=(_sql_communication, values, conn_with_router))
             # process.start()
 
     def deal_calculate_task(self):
@@ -316,7 +317,7 @@ class Router:
             del data
         if values:
             # process = threading.Thread(target=registration_db,
-            #                            args=(sql_calculate, values, conn_with_router))
+            #                            args=(_sql_calculate, values, conn_with_router))
             # process.start()
             self.calculate_values.extend(values)
 
@@ -342,7 +343,7 @@ class Router:
                     value = (task.sign, self.sign, task.slice_sign, True)
                     values.append(value)
                     del task
-            # process = threading.Thread(target=registration_db, args=(sql_sensor, values, conn_with_router))
+            # process = threading.Thread(target=registration_db, args=(_sql_sensor, values, conn_with_router))
             # process.start()
             self.sensor_values.extend(values)
         else:
@@ -376,6 +377,6 @@ class Router:
                 del data
         self.sensor_queue.extend(temporary_list)
         if values:
-            # process = threading.Thread(target=registration_db, args=(sql_sensor, values, conn_with_router))
+            # process = threading.Thread(target=registration_db, args=(_sql_sensor, values, conn_with_router))
             # process.start()
             self.sensor_values.extend(values)
