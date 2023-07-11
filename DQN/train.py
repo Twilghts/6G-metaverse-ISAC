@@ -144,14 +144,17 @@ if __name__ == '__main__':
         memory_usage = psutil.virtual_memory()
         print(f"Memory Usage: {memory_usage.percent}%")
         if memory_usage.percent >= 80:
-            process = threading.Thread(target=registration_db,
+            process_data = threading.Thread(target=registration_db,
                                        args=(_sql_data, data_values, _conn_in_train, random.choice(_cursor_pool)))
-            process.start()
+            process_data.start()
             data_values.clear()
-            process = threading.Thread(target=registration_db,
+            process_task = threading.Thread(target=registration_db,
                                        args=(_sql_task, task_values, _conn_in_train, random.choice(_cursor_pool)))
-            process.start()
+            process_task.start()
             task_values.clear()
+            """防止违反外键约束"""
+            process_data.join()
+            process_task.join()
             process = threading.Thread(target=registration_db, args=(_sql_task_data, task_data_values, _conn_in_train,
                                                                      random.choice(_cursor_pool)))
             process.start()
@@ -195,5 +198,5 @@ if __name__ == '__main__':
                                                                  _conn_in_train, random.choice(_cursor_pool)))
         process.start()
         router.sensor_values.clear()
-        filename = "model_1_" + str(router.sign)
+        filename = "model_2_" + str(router.sign)
         router.agent.target_model.save(f"../resource/{filename}")
