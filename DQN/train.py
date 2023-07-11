@@ -77,7 +77,7 @@ if __name__ == '__main__':
     _sql_sensor = 'INSERT INTO "SensorDataDB" (id, router_id, slice_id, is_loss)  ' \
                   'VALUES (%s, %s, %s, %s)'
 
-    _cursor_pool[0].execute("SELECT * FROM keyvalues where key = 'taskid'")
+    _cursor_pool[0].execute("SELECT value FROM keyvalues where key = 'taskid'")
     task_id = _cursor_pool[0].fetchone()[0]
     _cursor_pool[0].execute("SELECT value FROM keyvalues where key = 'dataid'")
     data_id = _cursor_pool[0].fetchone()[0]
