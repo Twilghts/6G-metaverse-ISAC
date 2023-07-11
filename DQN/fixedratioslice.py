@@ -1,6 +1,7 @@
 import random
 import time
 
+import psutil
 import psycopg2
 
 import communicationtask
@@ -77,6 +78,22 @@ if __name__ == '__main__':
                     data_values.append((data.sign, data.slice_sign, data.type))
             task_set |= tem_set
             del tem_set
+        memory_usage = psutil.virtual_memory()
+        if memory_usage.percent >= 80:
+            registration_db(_sql_data, data_values, _conn_in_train, random.choice(_cursor_pool))
+            data_values.clear()
+            registration_db(_sql_task, task_values, _conn_in_train, random.choice(_cursor_pool))
+            task_values.clear()
+            registration_db(_sql_task_data, task_data_values, _conn_in_train, random.choice(_cursor_pool))
+            task_data_values.clear()
+            for router in net.routers.values():
+                registration_db(_sql_communication, router.communication_values, _conn_in_train,
+                                random.choice(_cursor_pool))
+                router.communication_values.clear()
+                registration_db(_sql_calculate, router.calculate_values, _conn_in_train, random.choice(_cursor_pool))
+                router.calculate_values.clear()
+                registration_db(_sql_sensor, router.sensor_values, _conn_in_train, random.choice(_cursor_pool))
+                router.sensor_values.clear()
     registration_db(_sql_data, data_values, _conn_in_train, random.choice(_cursor_pool))
     data_values.clear()
     registration_db(_sql_task, task_values, _conn_in_train, random.choice(_cursor_pool))

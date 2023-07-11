@@ -1,6 +1,6 @@
 import numpy as np
 
-mean = 3500  # 正态分布的均值
+mean = 2500 # 正态分布的均值
 stddev = 700  # 正态分布的标准差
 size = 16  # 生成的整数数量
 
