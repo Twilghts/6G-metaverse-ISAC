@@ -188,3 +188,4 @@ if __name__ == '__main__':
     _cursor_pool[0].execute(_update_keyvalue_task, (task_id,))
     _cursor_pool[0].execute(_update_keyvalue_data, (data_id,))
     _conn_in_train.commit()
+    print(time.perf_counter() - start_time)

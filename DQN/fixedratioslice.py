@@ -56,7 +56,7 @@ if __name__ == '__main__':
         for data in task.dataset:
             task_data_values.append((task.task_id, data.sign))
             data_values.append((data.sign, data.slice_sign, data.type))
-    for i in range(1000000):
+    for i in range(4000000):
         task = task_set.pop()
         if isinstance(task, communicationtask.CommunicationTask):
             net.routers[task.path[0]].put_task(task)
