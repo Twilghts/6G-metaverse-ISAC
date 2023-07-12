@@ -68,13 +68,13 @@ if __name__ == '__main__':
     _sql_data = 'INSERT INTO data (id, slice, type)  ' \
                 'VALUES (%s, %s, %s)'
 
-    _sql_communication = 'INSERT INTO "CommunicationDataDB"(id, router_sign, delay, slice_sign, is_loss )' \
+    _sql_communication = 'INSERT INTO "communicationdatadb"(id, router_sign, delay, slice_sign, is_loss )' \
                          'VALUES (%s, %s, %s, %s, %s)'
 
-    _sql_calculate = 'INSERT INTO "CalculateDataDB" (id, router_id, delay, slice_sign)  ' \
+    _sql_calculate = 'INSERT INTO "calculatedatadb" (id, router_id, delay, slice_sign)  ' \
                      'VALUES (%s, %s, %s, %s)'
 
-    _sql_sensor = 'INSERT INTO "SensorDataDB" (id, router_id, slice_id, is_loss)  ' \
+    _sql_sensor = 'INSERT INTO "sensordatadb" (id, router_id, slice_id, is_loss)  ' \
                   'VALUES (%s, %s, %s, %s)'
 
     _cursor_pool[0].execute("SELECT value FROM keyvalues where key = 'taskid'")

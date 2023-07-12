@@ -30,13 +30,13 @@ if __name__ == '__main__':
     _sql_data = 'INSERT INTO data_comparison (id, slice, type)  ' \
                 'VALUES (%s, %s, %s)'
 
-    _sql_communication = 'INSERT INTO "CommunicationDataDB_comparison"(id, router_sign, delay, slice_sign, is_loss )' \
+    _sql_communication = 'INSERT INTO "communicationdatadb_comparison"(id, router_sign, delay, slice_sign, is_loss )' \
                          'VALUES (%s, %s, %s, %s, %s)'
 
-    _sql_calculate = 'INSERT INTO "CalculateDataDB_comparison" (id, router_id, delay, slice_sign)  ' \
+    _sql_calculate = 'INSERT INTO "calculatedatadb_comparison" (id, router_id, delay, slice_sign)  ' \
                      'VALUES (%s, %s, %s, %s)'
 
-    _sql_sensor = 'INSERT INTO "SensorDataDB_comparison" (id, router_id, slice_id, is_loss)  ' \
+    _sql_sensor = 'INSERT INTO "sensordatadb_comparison" (id, router_id, slice_id, is_loss)  ' \
                   'VALUES (%s, %s, %s, %s)'
 
     _cursor_pool[0].execute("SELECT value FROM keyvalues_comparison where key = 'taskid'")
@@ -56,7 +56,7 @@ if __name__ == '__main__':
         for data in task.dataset:
             task_data_values.append((task.task_id, data.sign))
             data_values.append((data.sign, data.slice_sign, data.type))
-    for i in range(10000000):
+    for i in range(1000000):
         task = task_set.pop()
         if isinstance(task, communicationtask.CommunicationTask):
             net.routers[task.path[0]].put_task(task)

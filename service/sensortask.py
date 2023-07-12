@@ -1,5 +1,4 @@
 import random
-import threading
 from typing import List
 
 import psycopg2
