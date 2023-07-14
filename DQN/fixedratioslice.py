@@ -22,13 +22,14 @@ if __name__ == '__main__':
     _update_keyvalue_task = "UPDATE keyvalues_comparison SET value = %s WHERE key = 'taskid'"
     _update_keyvalue_data = "UPDATE keyvalues_comparison SET value = %s WHERE key = 'dataid'"
 
-    _sql_communication = 'INSERT INTO "communicationdatadb_comparison"(id, router_sign, delay, slice_sign, is_loss )' \
+    _sql_communication = 'INSERT INTO "communicationdatadb_comparison"(id, timestamp, router_sign,' \
+                         ' delay, slice_sign, is_loss )' \
                          'VALUES (%s, %s, %s, %s, %s)'
 
-    _sql_calculate = 'INSERT INTO "calculatedatadb_comparison" (id, router_id, delay, slice_sign)  ' \
+    _sql_calculate = 'INSERT INTO "calculatedatadb_comparison" (id, time,  router_id, delay, slice_sign)  ' \
                      'VALUES (%s, %s, %s, %s)'
 
-    _sql_sensor = 'INSERT INTO "sensordatadb_comparison" (id, router_id, slice_id, is_loss)  ' \
+    _sql_sensor = 'INSERT INTO "sensordatadb_comparison" (id, time,  router_id, slice_id, is_loss)  ' \
                   'VALUES (%s, %s, %s, %s)'
 
     _cursor_pool[0].execute("SELECT value FROM keyvalues_comparison where key = 'taskid'")
@@ -40,7 +41,10 @@ if __name__ == '__main__':
     net.initialize()
     paths = net.chose_paths()
     task_set, task_id, data_id = build_task_set(200, paths, _task_id=task_id, _data_id=data_id)
-    for i in range(4000000):
+    for i in range(3000000):
+        if i % 10000 == 0:
+            print(f"第{i}轮")
+            print(time.perf_counter() - start_time)
         task = task_set.pop()
         if isinstance(task, communicationtask.CommunicationTask):
             net.routers[task.path[0]].put_task(task)
