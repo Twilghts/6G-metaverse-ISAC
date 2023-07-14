@@ -29,13 +29,13 @@ cursor_pool = []
 #     cursor_pool.append(conn_with_router.cursor())
 # 执行插入数据的SQL语句
 sql_communication = 'INSERT INTO "communicationdatadb"(id, timestamp,  router_sign, delay, slice_sign, is_loss )' \
-                    'VALUES (%s, %s, %s, %s, %s)'
+                    'VALUES (%s, %s, %s, %s, %s, %s)'
 
-sql_calculate = 'INSERT INTO "calculatedatadb" (id, router_id, delay, slice_sign)  ' \
-                'VALUES (%s, %s, %s, %s)'
+sql_calculate = 'INSERT INTO "calculatedatadb" (id, time, router_id, delay, slice_sign)  ' \
+                'VALUES (%s, %s, %s, %s, %s)'
 
-sql_sensor = 'INSERT INTO "sensordatadb" (id, router_id, slice_id, is_loss)  ' \
-             'VALUES (%s, %s, %s, %s)'
+sql_sensor = 'INSERT INTO "sensordatadb" (id, time, router_id, slice_id, is_loss)  ' \
+             'VALUES (%s, %s, %s, %s, %s)'
 
 
 def registration_db(sql, values, conn):

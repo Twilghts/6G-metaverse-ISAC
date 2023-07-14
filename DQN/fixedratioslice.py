@@ -24,13 +24,13 @@ if __name__ == '__main__':
 
     _sql_communication = 'INSERT INTO "communicationdatadb_comparison"(id, timestamp, router_sign,' \
                          ' delay, slice_sign, is_loss )' \
-                         'VALUES (%s, %s, %s, %s, %s)'
+                         'VALUES (%s, %s, %s, %s, %s, %s)'
 
-    _sql_calculate = 'INSERT INTO "calculatedatadb_comparison" (id, time,  router_id, delay, slice_sign)  ' \
-                     'VALUES (%s, %s, %s, %s)'
+    _sql_calculate = 'INSERT INTO "calculatedatadb_comparison" (id, time, router_id, delay, slice_sign)  ' \
+                     'VALUES (%s, %s, %s, %s, %s)'
 
-    _sql_sensor = 'INSERT INTO "sensordatadb_comparison" (id, time,  router_id, slice_id, is_loss)  ' \
-                  'VALUES (%s, %s, %s, %s)'
+    _sql_sensor = 'INSERT INTO "sensordatadb_comparison" (id, time, router_id, slice_id, is_loss)  ' \
+                  'VALUES (%s, %s, %s, %s, %s)'
 
     _cursor_pool[0].execute("SELECT value FROM keyvalues_comparison where key = 'taskid'")
     task_id = _cursor_pool[0].fetchone()[0]

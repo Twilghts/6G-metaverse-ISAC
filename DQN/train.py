@@ -61,13 +61,13 @@ if __name__ == '__main__':
     _update_keyvalue_data = "UPDATE keyvalues SET value = %s WHERE key = 'dataid'"
 
     _sql_communication = 'INSERT INTO "communicationdatadb"(id, timestamp,  router_sign, delay, slice_sign, is_loss )' \
-                         'VALUES (%s, %s, %s, %s, %s)'
+                         'VALUES (%s, %s, %s, %s, %s, %s)'
 
     _sql_calculate = 'INSERT INTO "calculatedatadb" (id, time,  router_id, delay, slice_sign)  ' \
-                     'VALUES (%s, %s, %s, %s)'
+                     'VALUES (%s, %s, %s, %s, %s)'
 
     _sql_sensor = 'INSERT INTO "sensordatadb" (id, time,  router_id, slice_id, is_loss)  ' \
-                  'VALUES (%s, %s, %s, %s)'
+                  'VALUES (%s, %s, %s, %s, %s)'
 
     _cursor_pool[0].execute("SELECT value FROM keyvalues where key = 'taskid'")
     task_id = _cursor_pool[0].fetchone()[0]
@@ -143,7 +143,7 @@ if __name__ == '__main__':
         router.calculate_values.clear()
         registration_db(_sql_sensor, router.sensor_values, _conn_in_train, random.choice(_cursor_pool))
         router.sensor_values.clear()
-        filename = "model_5_" + str(router.sign)
+        filename = "model_6_" + str(router.sign)
         router.agent.target_model.save(f"../resource/{filename}")
     _cursor_pool[0].execute(_update_keyvalue_task, (task_id,))
     _cursor_pool[0].execute(_update_keyvalue_data, (data_id,))
