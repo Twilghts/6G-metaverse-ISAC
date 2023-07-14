@@ -2,6 +2,7 @@ import copy
 import random
 from collections import deque
 from collections.abc import Iterable
+from datetime import datetime, timezone
 from typing import List, Union, Dict
 
 import numpy as np
@@ -27,13 +28,13 @@ cursor_pool = []
 # for _number in range(10000):
 #     cursor_pool.append(conn_with_router.cursor())
 # 执行插入数据的SQL语句
-sql_communication = 'INSERT INTO "CommunicationDataDB"(id, router_sign, delay, slice_sign, is_loss )' \
+sql_communication = 'INSERT INTO "communicationdatadb"(id, timestamp,  router_sign, delay, slice_sign, is_loss )' \
                     'VALUES (%s, %s, %s, %s, %s)'
 
-sql_calculate = 'INSERT INTO "CalculateDataDB" (id, router_id, delay, slice_sign)  ' \
+sql_calculate = 'INSERT INTO "calculatedatadb" (id, router_id, delay, slice_sign)  ' \
                 'VALUES (%s, %s, %s, %s)'
 
-sql_sensor = 'INSERT INTO "SensorDataDB" (id, router_id, slice_id, is_loss)  ' \
+sql_sensor = 'INSERT INTO "sensordatadb" (id, router_id, slice_id, is_loss)  ' \
              'VALUES (%s, %s, %s, %s)'
 
 
@@ -231,7 +232,7 @@ class Router:
                 index = 0
                 """将时延信息存入数据包"""
                 for item_delay in data.delay_every_step:
-                    value = (data.sign, data.path[index], item_delay, data.slice_sign, False)
+                    value = (data.sign, datetime.now(tz=timezone.utc), data.path[index], item_delay, data.slice_sign, False)
                     values.append(value)
                     index += 1
                 """数据包成功传输，成功运输的数据包数量加1"""
@@ -267,7 +268,7 @@ class Router:
                 index = 0
                 """将时延信息存入数据包"""  # 执行插入数据的SQL语句
                 for item_delay in data_list.delay_every_step:
-                    value = (data_list.sign, data_list.path[index], item_delay, data_list.slice_sign, True)
+                    value = (data_list.sign, datetime.now(tz=timezone.utc), data_list.path[index], item_delay, data_list.slice_sign, True)
                     values.append(value)
                     index += 1
                 # process = threading.Thread(target=registration_db,
@@ -292,7 +293,7 @@ class Router:
                     index = 0
                     """将时延信息存入数据包"""
                     for item_delay in data.delay_every_step:
-                        value = (data.sign, data.path[index], item_delay, data.slice_sign, True)
+                        value = (data.sign, datetime.now(tz=timezone.utc), data.path[index], item_delay, data.slice_sign, True)
                         values.append(value)
                         index += 1
                     """负载容量不够，数据包丢失，统计数据"""
@@ -312,7 +313,7 @@ class Router:
             waiting_time += data.calculate_required / (self.distribution[2][data.slice_sign] * self.computing_power)
             """为计算奖励值做准备"""
             self.calculate_reward_log[data.slice_sign].append(waiting_time)
-            value = (data.sign, self.sign, waiting_time, data.slice_sign)
+            value = (data.sign, datetime.now(tz=timezone.utc), self.sign, waiting_time, data.slice_sign)
             values.append(value)
             del data
         if values:
@@ -340,7 +341,7 @@ class Router:
                     self.sensor_loss_number += 1
                     """为计算奖励值做准备"""
                     self.sensor_reward_log[task.slice_sign] = True
-                    value = (task.sign, self.sign, task.slice_sign, True)
+                    value = (task.sign, datetime.now(tz=timezone.utc), self.sign, task.slice_sign, True)
                     values.append(value)
                     del task
             # process = threading.Thread(target=registration_db, args=(_sql_sensor, values, conn_with_router))
@@ -355,7 +356,8 @@ class Router:
                 self.sensor_loss_number += 1
                 """为计算奖励值做准备"""
                 self.sensor_reward_log[dataset.slice_sign] = True
-                self.sensor_values.append((dataset.sign, self.sign, dataset.slice_sign, True))
+                self.sensor_values.append((dataset.sign, datetime.now(tz=timezone.utc),
+                                           self.sign, dataset.slice_sign, True))
                 del dataset
 
     def deal_sensor_data(self):
@@ -372,7 +374,7 @@ class Router:
                 """否则销毁该数据，并且记做该数据成功完成任务，存入数据库"""
                 self.sensor_load_slice[data.slice_sign] -= data.storage_required
                 self.sensor_success_number += 1
-                value = (data.sign, self.sign, data.slice_sign, False)
+                value = (data.sign, datetime.now(tz=timezone.utc), self.sign, data.slice_sign, False)
                 values.append(value)
                 del data
         self.sensor_queue.extend(temporary_list)

@@ -60,13 +60,13 @@ if __name__ == '__main__':
     _update_keyvalue_task = "UPDATE keyvalues SET value = %s WHERE key = 'taskid'"
     _update_keyvalue_data = "UPDATE keyvalues SET value = %s WHERE key = 'dataid'"
 
-    _sql_communication = 'INSERT INTO "communicationdatadb"(id, router_sign, delay, slice_sign, is_loss )' \
+    _sql_communication = 'INSERT INTO "communicationdatadb"(id, timestamp,  router_sign, delay, slice_sign, is_loss )' \
                          'VALUES (%s, %s, %s, %s, %s)'
 
-    _sql_calculate = 'INSERT INTO "calculatedatadb" (id, router_id, delay, slice_sign)  ' \
+    _sql_calculate = 'INSERT INTO "calculatedatadb" (id, time,  router_id, delay, slice_sign)  ' \
                      'VALUES (%s, %s, %s, %s)'
 
-    _sql_sensor = 'INSERT INTO "sensordatadb" (id, router_id, slice_id, is_loss)  ' \
+    _sql_sensor = 'INSERT INTO "sensordatadb" (id, time,  router_id, slice_id, is_loss)  ' \
                   'VALUES (%s, %s, %s, %s)'
 
     _cursor_pool[0].execute("SELECT value FROM keyvalues where key = 'taskid'")
