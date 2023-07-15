@@ -120,7 +120,7 @@ if __name__ == '__main__':
             net.act_in_links()
             """选择通信链路的任务路径"""
             paths = net.chose_paths()
-            tem_set, task_id, data_id = build_task_set(75, paths, _task_id=task_id, _data_id=data_id)
+            tem_set, task_id, data_id = build_task_set(50, paths, _task_id=task_id, _data_id=data_id)
             task_set |= tem_set
             del tem_set
         print(time.perf_counter() - start_time)
@@ -143,7 +143,7 @@ if __name__ == '__main__':
         router.calculate_values.clear()
         registration_db(_sql_sensor, router.sensor_values, _conn_in_train, random.choice(_cursor_pool))
         router.sensor_values.clear()
-        filename = "model_6_" + str(router.sign)
+        filename = "model_7_" + str(router.sign)
         router.agent.target_model.save(f"../resource/{filename}")
     _cursor_pool[0].execute(_update_keyvalue_task, (task_id,))
     _cursor_pool[0].execute(_update_keyvalue_data, (data_id,))
