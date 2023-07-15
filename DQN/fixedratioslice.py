@@ -41,7 +41,7 @@ if __name__ == '__main__':
     net.initialize()
     paths = net.chose_paths()
     task_set, task_id, data_id = build_task_set(200, paths, _task_id=task_id, _data_id=data_id)
-    for i in range(3000000):
+    for i in range(500000):
         if i % 10000 == 0:
             print(f"第{i}轮")
             print(time.perf_counter() - start_time)

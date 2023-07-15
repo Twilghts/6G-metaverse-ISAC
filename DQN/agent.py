@@ -9,7 +9,7 @@ import tensorflow as tf
 
 ######################################################################
 # Replay Memory
-_capacity = 1000
+_capacity = 3000
 _transition = namedtuple('_transition', ('state', 'action_index', 'next_state', 'reward'))
 _epochs = 3
 

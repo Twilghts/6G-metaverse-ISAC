@@ -6,6 +6,7 @@ from scipy.stats import norm
 
 
 def reword_for_delay(delay) -> float:
+    """求通信时延的奖励函数"""
     """求正态分布函数与一条平行于x轴的直线所围成的面积，传入的参数为直线的y坐标值。作为求时延的奖励函数"""
     # 运行一次大概为1/5000秒
     # 正态分布的标准差
@@ -25,7 +26,7 @@ def reword_for_delay(delay) -> float:
 
 
 def reword_for_hash_rate(delay: int) -> float:
-    """求吞吐量的奖励函数"""
+    """求算力时延的奖励函数"""
     # 正态分布的均值和标准差
     """如果当前时间片没有处理计算任务就返回一个比较小的奖励值"""
     if delay == -1:
