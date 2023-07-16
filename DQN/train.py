@@ -57,21 +57,21 @@ if __name__ == '__main__':
     _cursor_pool = []
     for number in range(50):
         _cursor_pool.append(_conn_in_train.cursor())
-    _update_keyvalue_task = "UPDATE keyvalues SET value = %s WHERE key = 'taskid'"
-    _update_keyvalue_data = "UPDATE keyvalues SET value = %s WHERE key = 'dataid'"
+    _update_keyvalue_task = "UPDATE keyvalues_zhang SET value = %s WHERE key = 'taskid'"
+    _update_keyvalue_data = "UPDATE keyvalues_zhang SET value = %s WHERE key = 'dataid'"
 
-    _sql_communication = 'INSERT INTO "communicationdatadb"(id, timestamp,  router_sign, delay, slice_sign, is_loss )' \
+    _sql_communication = 'INSERT INTO "communicationdatadb_zhang"(id, timestamp,  router_sign, delay, slice_sign, is_loss )' \
                          'VALUES (%s, %s, %s, %s, %s, %s)'
 
-    _sql_calculate = 'INSERT INTO "calculatedatadb" (id, time,  router_id, delay, slice_sign)  ' \
+    _sql_calculate = 'INSERT INTO "calculatedatadb_zhang" (id, time,  router_id, delay, slice_sign)  ' \
                      'VALUES (%s, %s, %s, %s, %s)'
 
-    _sql_sensor = 'INSERT INTO "sensordatadb" (id, time,  router_id, slice_id, is_loss)  ' \
+    _sql_sensor = 'INSERT INTO "sensordatadb_zhang" (id, time,  router_id, slice_id, is_loss)  ' \
                   'VALUES (%s, %s, %s, %s, %s)'
 
-    _cursor_pool[0].execute("SELECT value FROM keyvalues where key = 'taskid'")
+    _cursor_pool[0].execute("SELECT value FROM keyvalues_zhang where key = 'taskid'")
     task_id = _cursor_pool[0].fetchone()[0]
-    _cursor_pool[0].execute("SELECT value FROM keyvalues where key = 'dataid'")
+    _cursor_pool[0].execute("SELECT value FROM keyvalues_zhang where key = 'dataid'")
     data_id = _cursor_pool[0].fetchone()[0]
     start_time = time.perf_counter()
     net = Net()
