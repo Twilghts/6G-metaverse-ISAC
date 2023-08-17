@@ -51,11 +51,15 @@ class CalculateData(Data):
 
 
 class SensorData(Data):
-    def __init__(self, slice_sign: int, dataid: int, storage_required: int = 1, count=3):
+    def __init__(self, slice_sign: int, dataid: int, specific_type: int, path, storage_required: int = 1, count=3):
         super().__init__(slice_sign=slice_sign, dataid=dataid)
         self.type = "SensorData"
         self.storage_required: int = storage_required
         self.count = count
+        self.delay: int = 0  # 代表了数据包在上一段链路的时延
+        self.delay_every_step: list = []
+        self.specific_type = specific_type
+        self.path = path
 
     def __repr__(self):
         return f"SensorData,要求的存储资源为:{self.storage_required}"
@@ -72,10 +76,11 @@ class TypeOfData(Enum):
 
 class DataFactory:
     @staticmethod
-    def create_data(task_type: TypeOfData, slice_sign: int, dataid: int, path: Union[List[int], None] = None) -> Data:
+    def create_data(task_type: TypeOfData, slice_sign: int,
+                    dataid: int, path: Union[List[int], None] = None, specific_type=None) -> Data:
         if task_type == TypeOfData.communication_data:
             return CommunicationData(slice_sign=slice_sign, dataid=dataid, path=path)
         elif task_type == TypeOfData.calculate_data:
             return CalculateData(slice_sign=slice_sign, dataid=dataid)
         elif task_type == TypeOfData.sensor_data:
-            return SensorData(slice_sign=slice_sign, dataid=dataid)
+            return SensorData(slice_sign=slice_sign, dataid=dataid, specific_type=specific_type, path=path)

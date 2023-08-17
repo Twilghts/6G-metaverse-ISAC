@@ -1,3 +1,4 @@
+import random
 from typing import Union, List
 
 from sensortask import SensorTask
@@ -19,8 +20,11 @@ class TaskFactory:
     def create_task(task_type: TypeOfTask, slice_sign: int, task_id: int, data_id: int,
                     path: Union[List[int], None] = None) -> Task:
         if task_type == TypeOfTask.communication_task:
-            return CommunicationTask(slice_sign=slice_sign, path=path, task_id=task_id, data_id=data_id)
+            return CommunicationTask(slice_sign=slice_sign, path=path, task_id=task_id, data_id=data_id,
+                                     communication_required=random.randint(5, 20))
         elif task_type == TypeOfTask.calculate_task:
-            return CalculateTask(slice_sign=slice_sign, task_id=task_id, data_id=data_id)
+            return CalculateTask(slice_sign=slice_sign, task_id=task_id, data_id=data_id,
+                                 calculate_required=random.randint(1, 6))
         elif task_type == TypeOfTask.sensor_task:
-            return SensorTask(slice_sign=slice_sign, task_id=task_id, data_id=data_id)
+            return SensorTask(slice_sign=slice_sign, path=path, task_id=task_id, data_id=data_id,
+                              sensor_required=random.randint(3, 15), specific_type=random.randint(1, 2))

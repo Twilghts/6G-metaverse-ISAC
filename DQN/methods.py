@@ -25,7 +25,7 @@ def reword_for_delay(delay) -> float:
             _x * norm.pdf(_x, 0, std_dev)
 
 
-def reword_for_hash_rate(delay: int) -> float:
+def reword_for_hash_rate(delay: float) -> float:
     """求算力时延的奖励函数"""
     # 正态分布的均值和标准差
     """如果当前时间片没有处理计算任务就返回一个比较小的奖励值"""

@@ -113,6 +113,11 @@ class Router:
             2: None,
             3: None
         }
+        self.sensor_communication_reward_log: Dict[int, List[float]] = {
+            1: [],
+            2: [],
+            3: []
+        }
 
     def __repr__(self):
         return f'Router:{self.sign},带宽资源为:{self.bandwidth},计算资源为:{self.computing_power},存储资源为:{self.storage}'
@@ -129,36 +134,81 @@ class Router:
         self.sensor_reward_log[2] = None
         sensor_slice_3 = self.sensor_reward_log[3]
         self.sensor_reward_log[3] = None
-        if self.communication_reward_log[1]:
-            communication_slice_1 = sum(self.communication_reward_log[1]) / len(self.communication_reward_log[1])
+        if self.communication_reward_log[1] or self.sensor_communication_reward_log[1]:
+            # communication_slice_1 = 0
+            # for item in self.communication_reward_log[1]:
+            #     communication_slice_1 += methods.reword_for_delay(item)
+            # communication_slice_1 /= len(self.communication_reward_log[1])
+            communication_slice_1 = \
+                (sum(self.communication_reward_log[1]) + sum(self.sensor_communication_reward_log[1])) / \
+                (len(self.communication_reward_log[1]) + len(self.sensor_communication_reward_log[1]))
             self.communication_reward_log[1].clear()
+            self.sensor_communication_reward_log[1].clear()
         else:
+            # communication_slice_1 = methods.reword_for_delay(-1)
             communication_slice_1 = -1
-        if self.communication_reward_log[2]:
-            communication_slice_2 = sum(self.communication_reward_log[2]) / len(self.communication_reward_log[2])
+
+        if self.communication_reward_log[2] or self.sensor_communication_reward_log[2]:
+            # communication_slice_2 = 0
+            # for item in self.communication_reward_log[2]:
+            #     communication_slice_2 += methods.reword_for_delay(item)
+            # communication_slice_2 /= len(self.communication_reward_log[2])
+            communication_slice_2 = \
+                (sum(self.communication_reward_log[2]) + sum(self.sensor_communication_reward_log[2])) / \
+                (len(self.communication_reward_log[2]) + len(self.sensor_communication_reward_log[2]))
             self.communication_reward_log[2].clear()
+            self.sensor_communication_reward_log[2].clear()
         else:
+            # communication_slice_2 = methods.reword_for_delay(-1)
             communication_slice_2 = -1
-        if self.communication_reward_log[3]:
-            communication_slice_3 = sum(self.communication_reward_log[3]) / len(self.communication_reward_log[3])
+
+        if self.communication_reward_log[3] or self.sensor_communication_reward_log[3]:
+            # communication_slice_3 = 0
+            # for item in self.communication_reward_log[3]:
+            #     communication_slice_3 += methods.reword_for_delay(item)
+            # communication_slice_3 /= len(self.communication_reward_log[3])
+            communication_slice_3 = \
+                (sum(self.communication_reward_log[3]) + sum(self.sensor_communication_reward_log[3])) / \
+                (len(self.communication_reward_log[3]) + len(self.sensor_communication_reward_log[3]))
             self.communication_reward_log[3].clear()
+            self.sensor_communication_reward_log[3].clear()
         else:
+            # communication_slice_3 = methods.reword_for_delay(-1)
             communication_slice_3 = -1
+
         if self.calculate_reward_log[1]:
+            # calculate_slice_1 = 0
+            # for item in self.calculate_reward_log[1]:
+            #     calculate_slice_1 += methods.reword_for_hash_rate(item)
+            # calculate_slice_1 /= len(self.calculate_reward_log[1])
             calculate_slice_1 = sum(self.calculate_reward_log[1]) / len(self.calculate_reward_log[1])
             self.calculate_reward_log[1].clear()
         else:
+            # calculate_slice_1 = methods.reword_for_hash_rate(-1)
             calculate_slice_1 = -1
+
         if self.calculate_reward_log[2]:
+            # calculate_slice_2 = 0
+            # for item in self.calculate_reward_log[2]:
+            #     calculate_slice_2 += methods.reword_for_hash_rate(item)
+            # calculate_slice_2 /= len(self.calculate_reward_log[2])
             calculate_slice_2 = sum(self.calculate_reward_log[2]) / len(self.calculate_reward_log[2])
             self.calculate_reward_log[2].clear()
         else:
+            # calculate_slice_2 = methods.reword_for_hash_rate(-1)
             calculate_slice_2 = -1
+
         if self.calculate_reward_log[3]:
+            # calculate_slice_3 = 0
+            # for item in self.calculate_reward_log[3]:
+            #     calculate_slice_3 += methods.reword_for_hash_rate(item)
+            # calculate_slice_3 /= len(self.calculate_reward_log[3])
             calculate_slice_3 = sum(self.calculate_reward_log[3]) / len(self.calculate_reward_log[3])
             self.calculate_reward_log[3].clear()
         else:
+            # calculate_slice_3 = methods.reword_for_hash_rate(-1)
             calculate_slice_3 = -1
+
         """以下为计算状态的过程,计算奖励值的参数即为状态，即根据状态得出奖励值"""
         state = copy.deepcopy(self.state)
         state[0][0] = communication_slice_1
@@ -187,9 +237,10 @@ class Router:
                 self.apply_action(action=action)
                 return 42
             else:
-                reword = methods.reword(((communication_slice_1, communication_slice_2, communication_slice_3),
-                                         (calculate_slice_1, calculate_slice_2, calculate_slice_3),
-                                         (sensor_slice_1, sensor_slice_2, sensor_slice_3)))
+                reword = methods.reword(
+                    ((communication_slice_1, communication_slice_2, communication_slice_3),
+                     (calculate_slice_1, calculate_slice_2, calculate_slice_3),
+                     (sensor_slice_1, sensor_slice_2, sensor_slice_3)))
                 self.agent.remember(np.array(self.state).reshape(1, 9), self.action_index,
                                     reword, np.array(state).reshape(1, 9))
                 self.state = copy.deepcopy(state)
@@ -198,9 +249,6 @@ class Router:
 
     def apply_action(self, action: List[List[float]]):
         """处理上一个状态遗留下来的数据，并且利用动作更新分配标准"""
-        self.pop_data_communication()
-        self.deal_calculate_task()
-        self.deal_sensor_data()
         for row in range(1, 4):
             for col in range(1, 4):
                 self.distribution[row][col] = action[row - 1][col - 1]
@@ -339,36 +387,59 @@ class Router:
                 if task.storage_required + self.sensor_load_slice[task.slice_sign] <= \
                         (self.distribution[3][task.slice_sign] * self.storage):
                     self.sensor_queue.append(task)
+                    task.current_router = self.sign  # 更新数据包所在路由器编号的信息
                     self.sensor_load_slice[task.slice_sign] += task.storage_required
                 else:
                     self.sensor_loss_number += 1
                     """为计算奖励值做准备"""
-                    self.sensor_reward_log[task.slice_sign] = True
-                    value = (task.sign, datetime.now(tz=timezone.utc), self.sign, task.slice_sign, True)
-                    values.append(value)
+                    if task.specific_type == 1:
+                        self.sensor_reward_log[task.slice_sign] = True
+                    """代表数据包一路上经过的路由器序号"""
+                    index = 0
+                    """将时延信息存入数据库"""
+                    for item_delay in task.delay_every_step:
+                        value = (task.sign, datetime.now(tz=timezone.utc), task.path[index],
+                                 task.slice_sign, True, item_delay, task.specific_type)
+                        values.append(value)
+                        index += 1
                     del task
-            # process = threading.Thread(target=registration_db, args=(_sql_sensor, values, conn_with_router))
-            # process.start()
             self.sensor_values.extend(values)
         else:
             if dataset.storage_required + self.sensor_load_slice[dataset.slice_sign] <= \
                     (self.distribution[3][dataset.slice_sign] * self.storage):
-                self.calculate_queue.append(dataset)
+                self.sensor_queue.append(dataset)
+                dataset.current_router = self.sign  # 更新数据包所在路由器编号的信息
                 self.sensor_load_slice[dataset.slice_sign] += dataset.storage_required
             else:
                 self.sensor_loss_number += 1
                 """为计算奖励值做准备"""
-                self.sensor_reward_log[dataset.slice_sign] = True
-                self.sensor_values.append((dataset.sign, datetime.now(tz=timezone.utc),
-                                           self.sign, dataset.slice_sign, True))
+                if dataset.specific_type == 1:
+                    self.sensor_reward_log[dataset.slice_sign] = True
+                """代表数据包一路上经过的路由器序号"""
+                index = 0
+                """将时延信息存入数据库"""
+                for item_delay in dataset.delay_every_step:
+                    self.sensor_values.append((dataset.sign, datetime.now(tz=timezone.utc), dataset.path[index],
+                                               dataset.slice_sign, True, item_delay, dataset.specific_type))
+                    index += 1
                 del dataset
 
-    def deal_sensor_data(self):
+    def deal_sensor_data(self) -> Union[None, List[SensorData]]:
+        cumulative_delay: float = 0
         values = []
+        passing_dataset = []
         temporary_list: List[SensorData] = []
         while self.sensor_queue:
             """临时承载数据包"""
             data: SensorData = self.sensor_queue.pop()
+            if self.sign != data.path[-1]:
+                cumulative_delay += data.storage_required / (self.bandwidth * self.distribution[1][data.slice_sign])
+                data.delay_every_step.append(cumulative_delay + data.delay)  # 时延累加
+                """为计算奖励值做准备"""
+                self.sensor_communication_reward_log[data.slice_sign].append(cumulative_delay + data.delay)
+                passing_dataset.append(data)
+                self.sensor_load_slice[data.slice_sign] -= data.storage_required
+                continue
             data.count -= 1
             """三次标记不够继续存储"""
             if data.count > 0:
@@ -377,11 +448,19 @@ class Router:
                 """否则销毁该数据，并且记做该数据成功完成任务，存入数据库"""
                 self.sensor_load_slice[data.slice_sign] -= data.storage_required
                 self.sensor_success_number += 1
-                value = (data.sign, datetime.now(tz=timezone.utc), self.sign, data.slice_sign, False)
-                values.append(value)
+                """代表数据包一路上经过的路由器序号"""
+                index = 0
+                """将时延信息存入数据库"""
+                for item_delay in data.delay_every_step:
+                    value = (data.sign, datetime.now(tz=timezone.utc), data.path[index],
+                             data.slice_sign, False, item_delay, data.specific_type)
+                    values.append(value)
+                    index += 1
                 del data
         self.sensor_queue.extend(temporary_list)
         if values:
-            # process = threading.Thread(target=registration_db, args=(_sql_sensor, values, conn_with_router))
-            # process.start()
             self.sensor_values.extend(values)
+        if passing_dataset:
+            return passing_dataset
+        else:
+            return None
