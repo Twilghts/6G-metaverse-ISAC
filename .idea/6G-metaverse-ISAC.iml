@@ -5,6 +5,7 @@
       <sourceFolder url="file://$MODULE_DIR$/DQN" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/net_related" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/service" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/.idea/dataSources" />
     </content>
     <orderEntry type="jdk" jdkName="tensorflow" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

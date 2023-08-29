@@ -165,15 +165,15 @@ class Net:
             router.distribution[3][3] = 0.7
         for link in self.links.values():
             # 针对链路带宽资源的初始化，切片一是主要处理通信业务的
-            link.communication_distribution[1] = 0.7
+            link.communication_distribution[1] = 0.5
             link.communication_distribution[2] = 0.15
-            link.communication_distribution[3] = 0.15
+            link.communication_distribution[3] = 0.35
 
         for router in self.edge_routers_first.values():
             # 针对路由器带宽资源的初始化，切片一是主要处理通信业务的
-            router.distribution[1][1] = 0.7
+            router.distribution[1][1] = 0.5
             router.distribution[1][2] = 0.15
-            router.distribution[1][3] = 0.15
+            router.distribution[1][3] = 0.35
             # 针对路由器计算资源的初始化，切片二是主要处理计算业务的
             router.distribution[2][1] = 0.15
             router.distribution[2][2] = 0.7

@@ -8,7 +8,7 @@ import numpy as np
 import tensorflow as tf
 
 ######################################################################
-# Replay Memory
+# Replay Memory(回访缓存大小)
 _capacity = 3000
 _transition = namedtuple('_transition', ('state', 'action_index', 'next_state', 'reward'))
 _epochs = 3

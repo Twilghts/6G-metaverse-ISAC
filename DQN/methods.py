@@ -4,16 +4,24 @@ import numpy as np
 from numpy import float32
 from scipy.stats import norm
 
+'''
+def reword_for_delay(delay) -> float:
+    if delay == -1:
+        return 0.05
+    mean = 0
+    std_dev = 0.35 / np.sqrt(2 * np.pi)
+    return 0.35 * norm.pdf(delay, mean, std_dev)
+'''
+
 
 def reword_for_delay(delay) -> float:
-    """求通信时延的奖励函数"""
     """求正态分布函数与一条平行于x轴的直线所围成的面积，传入的参数为直线的y坐标值。作为求时延的奖励函数"""
     # 运行一次大概为1/5000秒
     # 正态分布的标准差
     std_dev: float = 1
     """如果当前时间片没有处理通信任务就返回一个比较小的奖励值"""
     if delay == -1:
-        return 0.2
+        return 0.03
     elif delay >= norm.pdf(0, 0, std_dev):
         return 0
     elif delay <= 0:
@@ -25,22 +33,43 @@ def reword_for_delay(delay) -> float:
             _x * norm.pdf(_x, 0, std_dev)
 
 
+def reword_for_hash_rate(delay) -> float:
+    """求正态分布函数与一条平行于x轴的直线所围成的面积，传入的参数为直线的y坐标值。作为求时延的奖励函数"""
+    # 运行一次大概为1/5000秒
+    # 正态分布的标准差
+    std_dev: float = 0.7
+    """如果当前时间片没有处理通信任务就返回一个比较小的奖励值"""
+    if delay == -1:
+        return 0.03
+    elif delay >= norm.pdf(0, 0, std_dev):
+        return 0
+    elif delay <= 0:
+        return 1
+    else:
+        _x: float = np.sqrt(-2 * np.square(std_dev) * np.log(np.sqrt(2 * np.pi) * std_dev * delay))
+        return norm.cdf(_x, 0, std_dev) - \
+            norm.cdf(-_x, 0, std_dev) - 2 * \
+            _x * norm.pdf(_x, 0, std_dev)
+
+
+'''
 def reword_for_hash_rate(delay: float) -> float:
     """求算力时延的奖励函数"""
     # 正态分布的均值和标准差
     """如果当前时间片没有处理计算任务就返回一个比较小的奖励值"""
     if delay == -1:
-        return 0.2
+        return 0.05
     mean = 0
-    std_dev = 1.0 / np.sqrt(2 * np.pi)
-    return norm.pdf(delay, mean, std_dev)
+    std_dev = 0.35 / np.sqrt(2 * np.pi)
+    return 0.35 * norm.pdf(delay, mean, std_dev)
+'''
 
 
 def reword_for_package_loss_sensitive(loss: Union[None, bool]) -> float:
     """丢包率敏感的切片的丢包率奖励函数"""
     """如果当前时间片没有处理存储任务就返回一个折中的奖励值"""
     if loss is None:
-        return 0.5
+        return 0.03
     elif loss:
         return 0
     else:
@@ -51,7 +80,7 @@ def reword_for_package_loss_insensitive(loss: Union[None, bool]) -> float:
     """丢包率不敏感的切片的丢包率奖励函数"""
     """如果当前时间片没有处理存储任务就返回一个折中的奖励值"""
     if loss is None:
-        return 0.05
+        return 0.03
     elif loss != 0:
         return 0
     else:
@@ -79,9 +108,9 @@ def reword(state: tuple):
     """将每个函数的元素应用到相应的参数上，求出原始奖励值"""
     result = np.vectorize(lambda f, x: f(x))(functions, arguments)
     """针对每个切片的每类资源的重要性所设置的权重参数"""
-    weights_for_points = np.array([[8, 1, 1],
-                                   [1, 8, 1],
-                                   [1, 1, 8]], dtype=int)
+    weights_for_points = np.array([[7, 1.5, 1.5],
+                                   [1.5, 7, 1.5],
+                                   [1.5, 1.5, 7]], dtype=int)
     """针对每类切片在总网络上的重要性所设置的参数,分别代表切片一，切片二，切片三"""
     weights_for_slice = np.array([[1, 0, 0],
                                   [0, 1, 0],

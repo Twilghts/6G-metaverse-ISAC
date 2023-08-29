@@ -125,7 +125,7 @@ class Router:
     def __str__(self):
         return f'Router:{self.sign},带宽资源为:{self.bandwidth},计算资源为:{self.computing_power},存储资源为:{self.storage}'
 
-    def markov(self, is_dqn: bool = True):
+    def markov(self, is_dqn: bool = True, is_test: bool = False, is_best: bool = False):
         """更新状态，选择动作，计算奖励，向回放缓存中添加数据，完成一次马尔可夫过程，处理部分数据"""
         """以下为计算奖励值的过程"""
         sensor_slice_1 = self.sensor_reward_log[1]
@@ -237,14 +237,15 @@ class Router:
                 self.apply_action(action=action)
                 return 42
             else:
-                reword = methods.reword(
-                    ((communication_slice_1, communication_slice_2, communication_slice_3),
-                     (calculate_slice_1, calculate_slice_2, calculate_slice_3),
-                     (sensor_slice_1, sensor_slice_2, sensor_slice_3)))
-                self.agent.remember(np.array(self.state).reshape(1, 9), self.action_index,
-                                    reword, np.array(state).reshape(1, 9))
+                if not is_test:
+                    reword = methods.reword(
+                        ((communication_slice_1, communication_slice_2, communication_slice_3),
+                         (calculate_slice_1, calculate_slice_2, calculate_slice_3),
+                         (sensor_slice_1, sensor_slice_2, sensor_slice_3)))
+                    self.agent.remember(np.array(self.state).reshape(1, 9), self.action_index,
+                                        reword, np.array(state).reshape(1, 9))
                 self.state = copy.deepcopy(state)
-                action, self.action_index = self.agent.act(np.array(self.state).reshape(1, 9))
+                action, self.action_index = self.agent.act(np.array(self.state).reshape(1, 9), is_best=is_best)
                 self.apply_action(action=action)
 
     def apply_action(self, action: List[List[float]]):
