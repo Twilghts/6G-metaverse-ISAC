@@ -27,4 +27,4 @@ class TaskFactory:
                                  calculate_required=random.randint(1, 3))
         elif task_type == TypeOfTask.sensor_task:
             return SensorTask(slice_sign=slice_sign, path=path, task_id=task_id, data_id=data_id,
-                              sensor_required=random.randint(4, 15), specific_type=random.randint(1, 2))
+                              sensor_required=random.randint(3, 15), specific_type=random.randint(1, 2))
