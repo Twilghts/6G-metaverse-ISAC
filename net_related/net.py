@@ -171,9 +171,9 @@ class Net:
 
         for router in self.edge_routers_first.values():
             # 针对路由器带宽资源的初始化，切片一是主要处理通信业务的
-            router.distribution[1][1] = 0.5
-            router.distribution[1][2] = 0.15
-            router.distribution[1][3] = 0.35
+            router.distribution[1][1] = 0.6
+            router.distribution[1][2] = 0.1
+            router.distribution[1][3] = 0.3
             # 针对路由器计算资源的初始化，切片二是主要处理计算业务的
             router.distribution[2][1] = 0.15
             router.distribution[2][2] = 0.7
@@ -185,9 +185,9 @@ class Net:
 
         for router in self.edge_routers_second.values():
             # 针对路由器带宽资源的初始化，切片一是主要处理通信业务的
-            router.distribution[1][1] = 0.7
-            router.distribution[1][2] = 0.15
-            router.distribution[1][3] = 0.15
+            router.distribution[1][1] = 0.6
+            router.distribution[1][2] = 0.1
+            router.distribution[1][3] = 0.3
             # 针对路由器计算资源的初始化，切片二是主要处理计算业务的
             router.distribution[2][1] = 0.15
             router.distribution[2][2] = 0.7
