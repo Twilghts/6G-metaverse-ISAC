@@ -19,3 +19,16 @@ def reword_for_delay(delay) -> float:
         return norm.cdf(_x, 0, std_dev) - \
             norm.cdf(-_x, 0, std_dev) - 2 * \
             _x * norm.pdf(_x, 0, std_dev)
+
+
+def reword_for_hash_rate(delay) -> float:
+    """分段函数，前半段为二次函数，后半段为反比例函数"""
+    """如果当前时间片没有处理通信任务就返回一个比较小的奖励值"""
+    if delay == -1:
+        return 0.07
+    elif delay <= 0:
+        return 1
+    elif delay <= 0.1:
+        return 80 * (delay ** 2) - 16 * delay + 1
+    elif delay > 0.1:
+        return 1 / (50 * delay)

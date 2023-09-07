@@ -156,9 +156,9 @@ class Net:
             router.distribution[1][2] = 0.1475
             router.distribution[1][3] = 0.1475
             # 针对路由器计算资源的初始化，切片二是主要处理计算业务的
-            router.distribution[2][1] = 0.175
-            router.distribution[2][2] = 0.65
-            router.distribution[2][3] = 0.175
+            router.distribution[2][1] = 0.25
+            router.distribution[2][2] = 0.5
+            router.distribution[2][3] = 0.25
             # 针对路由器存储资源的初始化，切片三是主要处理存储业务的
             router.distribution[3][1] = 0.15
             router.distribution[3][2] = 0.15
@@ -175,9 +175,9 @@ class Net:
             router.distribution[1][2] = 0.1475
             router.distribution[1][3] = 0.1475
             # 针对路由器计算资源的初始化，切片二是主要处理计算业务的
-            router.distribution[2][1] = 0.175
-            router.distribution[2][2] = 0.65
-            router.distribution[2][3] = 0.175
+            router.distribution[2][1] = 0.25
+            router.distribution[2][2] = 0.5
+            router.distribution[2][3] = 0.25
             # 针对路由器存储资源的初始化，切片三是主要处理存储业务的
             router.distribution[3][1] = 0.15
             router.distribution[3][2] = 0.15
@@ -189,9 +189,9 @@ class Net:
             router.distribution[1][2] = 0.1475
             router.distribution[1][3] = 0.1475
             # 针对路由器计算资源的初始化，切片二是主要处理计算业务的
-            router.distribution[2][1] = 0.175
-            router.distribution[2][2] = 0.65
-            router.distribution[2][3] = 0.175
+            router.distribution[2][1] = 0.25
+            router.distribution[2][2] = 0.5
+            router.distribution[2][3] = 0.25
             # 针对路由器存储资源的初始化，切片三是主要处理存储业务的
             router.distribution[3][1] = 0.15
             router.distribution[3][2] = 0.15
