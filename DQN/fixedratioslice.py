@@ -42,7 +42,7 @@ if __name__ == '__main__':
     net.initialize()
     paths = net.chose_paths()
     task_set, task_id, data_id = build_task_set(200, paths, _task_id=task_id, _data_id=data_id)
-    for i in range(2000000):
+    for i in range(200000):
         if i % 10000 == 0:
             print(f"第{i}轮")
             print(time.perf_counter() - start_time)
@@ -86,3 +86,4 @@ if __name__ == '__main__':
     _cursor_pool[0].execute(_update_keyvalue_task, (task_id,))
     _cursor_pool[0].execute(_update_keyvalue_data, (data_id,))
     _conn_in_train.commit()
+    print(time.perf_counter() - start_time)
