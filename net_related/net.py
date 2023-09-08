@@ -27,7 +27,7 @@ class Net:
         self.router_storage = [2222, 1386, 1602, 2235, 1961, 2263, 3089, 852, 1746, 2525, 3170, 472, 1884, 2520,
                                2816, 2362]
         self.router_storage.sort(reverse=True)
-        self.router_calculate = [143, 167, 115, 196, 168, 135, 186, 53, 151, 47, 116, 107, 83, 80, 135, 165]
+        self.router_calculate = [226, 383, 225, 165, 210, 247, 334, 156, 210, 241, 320, 264, 233, 129, 281, 132]
         self.router_calculate.sort()
         self.router_bandwidth = [438, 520, 443, 458, 488, 525, 452, 483, 471, 496, 484, 488,
                                  532, 509, 550, 433]
@@ -88,12 +88,12 @@ class Net:
                     ports = (data.current_router, data.path[index])
                     if ports in self.links.keys():
                         data.delay = data.storage_required / \
-                                      (self.links[ports].bandwidth *
-                                       self.links[ports].communication_distribution[data.slice_sign])
+                                     (self.links[ports].bandwidth *
+                                      self.links[ports].communication_distribution[data.slice_sign])
                     else:
                         data.delay = data.storage_required / \
-                                      (self.links[ports[::-1]].bandwidth *
-                                       self.links[ports[::-1]].communication_distribution[data.slice_sign])
+                                     (self.links[ports[::-1]].bandwidth *
+                                      self.links[ports[::-1]].communication_distribution[data.slice_sign])
                     self.core_routers[data.path[index]].push_sensor_data(data)
 
         for router in self.edge_routers_first.values():
