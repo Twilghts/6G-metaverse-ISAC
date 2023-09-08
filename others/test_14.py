@@ -4,7 +4,7 @@ from scipy.stats import norm
 
 
 def reword_for_hash_rate(delay) -> float:
-    std_dev: float = 0.7
+    std_dev: float = 0.5
     if delay == -1:
         return 0.07
     elif delay >= norm.pdf(0, 0, std_dev):
@@ -19,7 +19,7 @@ def reword_for_hash_rate(delay) -> float:
 
 
 # 创建一个范围内的延迟值
-delay_values = np.linspace(0, norm.pdf(0, 0, 0.7), 100)
+delay_values = np.linspace(0, norm.pdf(0, 0, 0.5), 100)
 rewards = [reword_for_hash_rate(delay) for delay in delay_values]
 
 # 绘制函数图形
