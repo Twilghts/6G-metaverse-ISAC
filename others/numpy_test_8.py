@@ -1,7 +1,7 @@
 import numpy as np
 
 mean = 250  # 正态分布的均值
-stddev = 80  # 正态分布的标准差
+stddev = 40  # 正态分布的标准差
 size = 16  # 生成的整数数量
 
 random_floats = np.random.normal(mean, stddev, size)
