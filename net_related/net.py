@@ -27,7 +27,7 @@ class Net:
         self.router_storage = [2222, 1386, 1602, 2235, 1961, 2263, 3089, 852, 1746, 2525, 3170, 472, 1884, 2520,
                                2816, 2362]
         self.router_storage.sort(reverse=True)
-        self.router_calculate = [262, 292, 214, 234, 236, 268, 294, 274, 229, 288, 240, 209, 209, 255, 250, 240]
+        self.router_calculate = [294, 276, 222, 221, 226, 265, 317, 183, 214, 181, 322, 256, 294, 143, 238, 385]
         self.router_calculate.sort()
         self.router_bandwidth = [438, 520, 443, 458, 488, 525, 452, 483, 471, 496, 484, 488,
                                  532, 509, 550, 433]
