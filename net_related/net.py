@@ -29,7 +29,7 @@ class Net:
         self.router_storage.sort(reverse=True)
         self.router_calculate = [226, 383, 225, 165, 210, 247, 334, 156, 210, 241, 320, 264, 233, 129, 281, 132]
         self.router_calculate.sort()
-        self.router_bandwidth = [716, 888, 752, 709, 689, 763, 738, 696, 694, 727, 820, 774, 752, 792, 809, 655]
+        self.router_bandwidth = [484, 397, 366, 469, 428, 341, 350, 393, 418, 431, 426, 419, 422, 472, 375, 484]
         """路由器组 为字典，键为路由器的编号，值为所对应的路由器,设置路由器内部可存储的数据容量。"""
         self.core_routers: Dict[int, Router] = {
             number: Router(number, storage=self.router_storage[number], computing_power=self.router_calculate[number],
