@@ -27,7 +27,7 @@ class Net:
         self.router_storage = [2222, 1386, 1602, 2235, 1961, 2263, 3089, 852, 1746, 2525, 3170, 472, 1884, 2520,
                                2816, 2362]
         self.router_storage.sort(reverse=True)
-        self.router_calculate = [294, 276, 222, 221, 226, 265, 317, 183, 214, 181, 322, 256, 294, 143, 238, 385]
+        self.router_calculate = [226, 383, 225, 165, 210, 247, 334, 156, 210, 241, 320, 264, 233, 129, 281, 132]
         self.router_calculate.sort()
         self.router_bandwidth = [438, 520, 443, 458, 488, 525, 452, 483, 471, 496, 484, 488,
                                  532, 509, 550, 433]
@@ -156,9 +156,9 @@ class Net:
             router.distribution[1][2] = 0.1475
             router.distribution[1][3] = 0.1475
             # 针对路由器计算资源的初始化，切片二是主要处理计算业务的
-            router.distribution[2][1] = 0.2
-            router.distribution[2][2] = 0.6
-            router.distribution[2][3] = 0.2
+            router.distribution[2][1] = 0.3
+            router.distribution[2][2] = 0.4
+            router.distribution[2][3] = 0.3
             # 针对路由器存储资源的初始化，切片三是主要处理存储业务的
             router.distribution[3][1] = 0.15
             router.distribution[3][2] = 0.15
@@ -175,9 +175,9 @@ class Net:
             router.distribution[1][2] = 0.1475
             router.distribution[1][3] = 0.1475
             # 针对路由器计算资源的初始化，切片二是主要处理计算业务的
-            router.distribution[2][1] = 0.2
-            router.distribution[2][2] = 0.6
-            router.distribution[2][3] = 0.2
+            router.distribution[2][1] = 0.3
+            router.distribution[2][2] = 0.4
+            router.distribution[2][3] = 0.3
             # 针对路由器存储资源的初始化，切片三是主要处理存储业务的
             router.distribution[3][1] = 0.15
             router.distribution[3][2] = 0.15
@@ -189,9 +189,9 @@ class Net:
             router.distribution[1][2] = 0.1475
             router.distribution[1][3] = 0.1475
             # 针对路由器计算资源的初始化，切片二是主要处理计算业务的
-            router.distribution[2][1] = 0.2
-            router.distribution[2][2] = 0.6
-            router.distribution[2][3] = 0.2
+            router.distribution[2][1] = 0.3
+            router.distribution[2][2] = 0.4
+            router.distribution[2][3] = 0.3
             # 针对路由器存储资源的初始化，切片三是主要处理存储业务的
             router.distribution[3][1] = 0.15
             router.distribution[3][2] = 0.15
