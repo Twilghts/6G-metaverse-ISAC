@@ -14,6 +14,14 @@ def registration_db(sql, values, conn, cursor):
     conn.commit()
 
 
+def choose_router_index_by_calculate_weight(_net: Net):
+    random_number = random.randint(0, _net.total_calculate_weight)
+    index: int = 0
+    while sum(_net.router_calculate[:index + 1]) < random_number:
+        index += 1
+    return index
+
+
 def build_task_set(_number: int, _paths: Dict[int, List[List[int]]], _task_id: int, _data_id: int) \
         -> Tuple[Set[Task], int, int]:
     _task_set = set()
@@ -92,7 +100,8 @@ if __name__ == '__main__':
                 else:
                     random.choice(list(net.edge_routers_second.values())).put_task(task)
             else:
-                random.choice(list(net.core_routers.values())).put_task(task)
+                random_index = choose_router_index_by_calculate_weight(_net=net)
+                net.core_routers[random_index].put_task(task)
             if j == 25:
                 net.deal_data()
         for router in net.core_routers.values():
@@ -125,7 +134,8 @@ if __name__ == '__main__':
                     else:
                         random.choice(list(net.edge_routers_second.values())).put_task(task)
                 else:
-                    random.choice(list(net.core_routers.values())).put_task(task)
+                    random_index = choose_router_index_by_calculate_weight(_net=net)
+                    net.core_routers[random_index].put_task(task)
                 if j == 25:
                     net.deal_data()
             for router in net.core_routers.values():
@@ -143,7 +153,7 @@ if __name__ == '__main__':
         # memory_usage = psutil.virtual_memory()
         # print(f"Memory Usage: {memory_usage.percent}%")
         # if memory_usage.percent >= 80:
-        #     for router in net.core_routers.values():
+        #     for router in _net.core_routers.values():
         #         registration_db(_sql_communication, router.communication_values, _conn_in_train,
         #                         random.choice(_cursor_pool))
         #         router.communication_values.clear()
@@ -159,7 +169,7 @@ if __name__ == '__main__':
         # router.calculate_values.clear()
         # registration_db(_sql_sensor, router.sensor_values, _conn_in_train, random.choice(_cursor_pool))
         # router.sensor_values.clear()
-        filename = "model_55_" + str(router.sign)
+        filename = "model_56_" + str(router.sign)
         router.agent.target_model.save(f"../resource/{filename}")
     # _cursor_pool[0].execute(_update_keyvalue_task, (task_id,))
     # _cursor_pool[0].execute(_update_keyvalue_data, (data_id,))

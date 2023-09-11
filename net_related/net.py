@@ -27,7 +27,9 @@ class Net:
         self.router_storage = [2222, 1386, 1602, 2235, 1961, 2263, 3089, 852, 1746, 2525, 3170, 472, 1884, 2520,
                                2816, 2362]
         self.router_storage.sort(reverse=True)
-        self.router_calculate = [226, 383, 225, 165, 210, 247, 334, 156, 210, 241, 320, 264, 233, 129, 281, 132]
+        self.router_calculate = [438, 520, 443, 458, 488, 525, 452, 483, 471, 496, 484, 488, 532, 509, 550, 433]
+        """用作为计算类任务根据路由器计算资源随机选择路由器"""
+        self.total_calculate_weight = sum(self.router_calculate)
         self.router_calculate.sort()
         self.router_bandwidth = [328, 423, 438, 375, 368, 382, 399, 325, 348, 294, 378, 340, 316, 331, 328, 431]
         """路由器组 为字典，键为路由器的编号，值为所对应的路由器,设置路由器内部可存储的数据容量。"""

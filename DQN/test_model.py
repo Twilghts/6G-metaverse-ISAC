@@ -8,7 +8,7 @@ import tensorflow as tf
 import communicationtask
 import sensortask
 from net_related.net import Net
-from train import build_task_set, registration_db
+from train import build_task_set, registration_db, choose_router_index_by_calculate_weight
 
 if __name__ == '__main__':
     _conn_in_train = psycopg2.connect(
@@ -57,7 +57,8 @@ if __name__ == '__main__':
                 else:
                     random.choice(list(test_net.edge_routers_second.values())).put_task(task)
             else:
-                random.choice(list(test_net.core_routers.values())).put_task(task)
+                random_index = choose_router_index_by_calculate_weight(_net=test_net)
+                test_net.core_routers[random_index].put_task(task)
             if j == 25:
                 test_net.deal_data()
         for router in test_net.core_routers.values():
