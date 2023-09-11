@@ -8,6 +8,7 @@ import communicationtask
 import sensortask
 from net import Net
 from train import build_task_set, registration_db
+from train import choose_router_index_by_calculate_weight
 
 if __name__ == '__main__':
     _conn_in_train = psycopg2.connect(
@@ -55,7 +56,8 @@ if __name__ == '__main__':
             else:
                 random.choice(list(net.edge_routers_second.values())).put_task(task)
         else:
-            random.choice(list(net.core_routers.values())).put_task(task)
+            random_index = choose_router_index_by_calculate_weight(_net=net)
+            net.core_routers[random_index].put_task(task)
         if i % 50 == 0 and i != 0:
             for router in net.core_routers.values():
                 router.markov(is_dqn=False)
