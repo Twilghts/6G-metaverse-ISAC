@@ -100,8 +100,9 @@ if __name__ == '__main__':
                 else:
                     random.choice(list(net.edge_routers_second.values())).put_task(task)
             else:
-                random_index = choose_router_index_by_calculate_weight(_net=net)
-                net.core_routers[random_index].put_task(task)
+                # random_index = choose_router_index_by_calculate_weight(_net=net)
+                # net.core_routers[random_index].put_task(task)
+                random.choice(list(net.core_routers.values())).put_task(task)
             if j == 25:
                 net.deal_data()
         for router in net.core_routers.values():
@@ -134,8 +135,9 @@ if __name__ == '__main__':
                     else:
                         random.choice(list(net.edge_routers_second.values())).put_task(task)
                 else:
-                    random_index = choose_router_index_by_calculate_weight(_net=net)
-                    net.core_routers[random_index].put_task(task)
+                    # random_index = choose_router_index_by_calculate_weight(_net=net)
+                    # net.core_routers[random_index].put_task(task)
+                    random.choice(list(net.core_routers.values())).put_task(task)
                 if j == 25:
                     net.deal_data()
             for router in net.core_routers.values():
@@ -169,7 +171,7 @@ if __name__ == '__main__':
         # router.calculate_values.clear()
         # registration_db(_sql_sensor, router.sensor_values, _conn_in_train, random.choice(_cursor_pool))
         # router.sensor_values.clear()
-        filename = "model_56_" + str(router.sign)
+        filename = "model_57_" + str(router.sign)
         router.agent.target_model.save(f"../resource/{filename}")
     # _cursor_pool[0].execute(_update_keyvalue_task, (task_id,))
     # _cursor_pool[0].execute(_update_keyvalue_data, (data_id,))
