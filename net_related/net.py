@@ -27,7 +27,7 @@ class Net:
         self.router_storage = [2222, 1386, 1602, 2235, 1961, 2263, 3089, 852, 1746, 2525, 3170, 472, 1884, 2520,
                                2816, 2362]
         self.router_storage.sort(reverse=True)
-        self.router_calculate = [226, 383, 225, 165, 210, 247, 334, 156, 210, 241, 320, 264, 233, 129, 281, 132]
+        self.router_calculate = [312, 323, 382, 334, 368, 416, 362, 343, 373, 303, 333, 340, 303, 376, 311, 364]
         """用作为计算类任务根据路由器计算资源随机选择路由器"""
         self.total_calculate_weight = sum(self.router_calculate)
         self.router_calculate.sort()
