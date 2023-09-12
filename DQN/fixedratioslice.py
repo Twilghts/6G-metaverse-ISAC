@@ -43,7 +43,7 @@ if __name__ == '__main__':
     net.initialize()
     paths = net.chose_paths()
     task_set, task_id, data_id = build_task_set(200, paths, _task_id=task_id, _data_id=data_id)
-    for i in range(200000):
+    for i in range(100000):
         if i % 10000 == 0:
             print(f"第{i}轮")
             print(time.perf_counter() - start_time)
@@ -56,9 +56,9 @@ if __name__ == '__main__':
             else:
                 random.choice(list(net.edge_routers_second.values())).put_task(task)
         else:
-            # random_index = choose_router_index_by_calculate_weight(_net=net)
-            # net.core_routers[random_index].put_task(task)
-            random.choice(list(net.core_routers.values())).put_task(task)
+            random_index = choose_router_index_by_calculate_weight(_net=net)
+            net.core_routers[random_index].put_task(task)
+            # random.choice(list(net.core_routers.values())).put_task(task)
         if i % 50 == 0 and i != 0:
             for router in net.core_routers.values():
                 router.markov(is_dqn=False)

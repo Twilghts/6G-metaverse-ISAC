@@ -40,7 +40,7 @@ if __name__ == '__main__':
     start_time = time.perf_counter()
     test_net = Net()
     for router in test_net.core_routers.values():
-        filename = "model_59_" + str(router.sign)
+        filename = "model_60_" + str(router.sign)
         router.agent.target_model = tf.keras.models.load_model(f"../resource/{filename}")
     test_net.initialize()
     paths = test_net.chose_paths()
@@ -57,9 +57,9 @@ if __name__ == '__main__':
                 else:
                     random.choice(list(test_net.edge_routers_second.values())).put_task(task)
             else:
-                # random_index = choose_router_index_by_calculate_weight(_net=test_net)
-                # test_net.core_routers[random_index].put_task(task)
-                random.choice(list(test_net.core_routers.values())).put_task(task)
+                random_index = choose_router_index_by_calculate_weight(_net=test_net)
+                test_net.core_routers[random_index].put_task(task)
+                # random.choice(list(test_net.core_routers.values())).put_task(task)
             if j == 25:
                 test_net.deal_data()
         for router in test_net.core_routers.values():
