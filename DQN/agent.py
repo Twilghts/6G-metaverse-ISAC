@@ -558,7 +558,7 @@ class DQN:
         self.epsilon: float = 1.0  # 随机探索率
         self.epsilon_min: float = 0.05  # 最低随机探索率
         self.epsilon_decay: float = 0.997  # 探索率下降指数
-        self.learning_rate: float = 0.001  # 学习率
+        self.learning_rate: float = 0.0006  # 学习率
         self.batch_size: int = 32
         self.memory: ReplyMemory = ReplyMemory()
         self.target_model = self._build_model()  # 目标模型
