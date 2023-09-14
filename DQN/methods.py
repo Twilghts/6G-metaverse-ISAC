@@ -108,9 +108,9 @@ def reword(state: tuple):
     """将每个函数的元素应用到相应的参数上，求出原始奖励值"""
     result = np.vectorize(lambda f, x: f(x))(functions, arguments)
     """针对每个切片的每类资源的重要性所设置的权重参数"""
-    weights_for_points = np.array([[7, 1.5, 1.5],
-                                   [1.5, 7, 1.5],
-                                   [1.5, 1.5, 7]], dtype=int)
+    weights_for_points = np.array([[8, 1, 1],
+                                   [1, 8, 1],
+                                   [1, 1, 8]], dtype=int)
     """针对每类切片在总网络上的重要性所设置的参数,分别代表切片一，切片二，切片三"""
     weights_for_slice = np.array([[1, 0, 0],
                                   [0, 1, 0],
