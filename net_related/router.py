@@ -25,8 +25,6 @@ conn_with_router = psycopg2.connect(
     password="rkw2536153"
 )
 cursor_pool = []
-# for _number in range(10000):
-#     cursor_pool.append(conn_with_router.cursor())
 # 执行插入数据的SQL语句
 sql_communication = 'INSERT INTO "communicationdatadb"(id, timestamp,  router_sign, delay, slice_sign, is_loss )' \
                     'VALUES (%s, %s, %s, %s, %s, %s)'
@@ -135,85 +133,55 @@ class Router:
         sensor_slice_3 = self.sensor_reward_log[3]
         self.sensor_reward_log[3] = None
         if self.communication_reward_log[1] or self.sensor_communication_reward_log[1]:
-            # communication_slice_1 = 0
-            # for item in self.communication_reward_log[1]:
-            #     communication_slice_1 += methods.reword_for_delay(item)
-            # communication_slice_1 /= len(self.communication_reward_log[1])
             communication_slice_1 = \
                 (sum(self.communication_reward_log[1]) + sum(self.sensor_communication_reward_log[1])) / \
                 (len(self.communication_reward_log[1]) + len(self.sensor_communication_reward_log[1]))
             self.communication_reward_log[1].clear()
             self.sensor_communication_reward_log[1].clear()
         else:
-            # communication_slice_1 = methods.reword_for_delay(-1)
             communication_slice_1 = -1
 
         if self.communication_reward_log[2] or self.sensor_communication_reward_log[2]:
-            # communication_slice_2 = 0
-            # for item in self.communication_reward_log[2]:
-            #     communication_slice_2 += methods.reword_for_delay(item)
-            # communication_slice_2 /= len(self.communication_reward_log[2])
             communication_slice_2 = \
                 (sum(self.communication_reward_log[2]) + sum(self.sensor_communication_reward_log[2])) / \
                 (len(self.communication_reward_log[2]) + len(self.sensor_communication_reward_log[2]))
             self.communication_reward_log[2].clear()
             self.sensor_communication_reward_log[2].clear()
         else:
-            # communication_slice_2 = methods.reword_for_delay(-1)
             communication_slice_2 = -1
 
         if self.communication_reward_log[3] or self.sensor_communication_reward_log[3]:
-            # communication_slice_3 = 0
-            # for item in self.communication_reward_log[3]:
-            #     communication_slice_3 += methods.reword_for_delay(item)
-            # communication_slice_3 /= len(self.communication_reward_log[3])
             communication_slice_3 = \
                 (sum(self.communication_reward_log[3]) + sum(self.sensor_communication_reward_log[3])) / \
                 (len(self.communication_reward_log[3]) + len(self.sensor_communication_reward_log[3]))
             self.communication_reward_log[3].clear()
             self.sensor_communication_reward_log[3].clear()
         else:
-            # communication_slice_3 = methods.reword_for_delay(-1)
             communication_slice_3 = -1
 
         if self.calculate_reward_log[1]:
-            # calculate_slice_1 = 0
-            # for item in self.calculate_reward_log[1]:
-            #     calculate_slice_1 += methods.reword_for_hash_rate(item)
-            # calculate_slice_1 /= len(self.calculate_reward_log[1])
             calculate_slice_1 = sum(self.calculate_reward_log[1]) / len(self.calculate_reward_log[1])
             self.calculate_reward_log[1].clear()
         else:
-            # calculate_slice_1 = methods.reword_for_hash_rate(-1)
             calculate_slice_1 = -1
 
         if self.calculate_reward_log[2]:
-            # calculate_slice_2 = 0
-            # for item in self.calculate_reward_log[2]:
-            #     calculate_slice_2 += methods.reword_for_hash_rate(item)
-            # calculate_slice_2 /= len(self.calculate_reward_log[2])
             calculate_slice_2 = sum(self.calculate_reward_log[2]) / len(self.calculate_reward_log[2])
             self.calculate_reward_log[2].clear()
         else:
-            # calculate_slice_2 = methods.reword_for_hash_rate(-1)
             calculate_slice_2 = -1
 
         if self.calculate_reward_log[3]:
-            # calculate_slice_3 = 0
-            # for item in self.calculate_reward_log[3]:
-            #     calculate_slice_3 += methods.reword_for_hash_rate(item)
-            # calculate_slice_3 /= len(self.calculate_reward_log[3])
             calculate_slice_3 = sum(self.calculate_reward_log[3]) / len(self.calculate_reward_log[3])
             self.calculate_reward_log[3].clear()
         else:
-            # calculate_slice_3 = methods.reword_for_hash_rate(-1)
             calculate_slice_3 = -1
 
         """以下为计算状态的过程,计算奖励值的参数即为状态，即根据状态得出奖励值"""
         state = copy.deepcopy(self.state)
         state[0][0] = communication_slice_1
         state[0][1] = communication_slice_2
-        state[0][1] = communication_slice_3
+        state[0][2] = communication_slice_3
         state[1][0] = calculate_slice_1
         state[1][1] = calculate_slice_2
         state[1][2] = calculate_slice_3
@@ -294,9 +262,6 @@ class Router:
                 data_list.append(data)
         """有数据传数据，没数据传None"""
         if data_list:
-            # process = threading.Thread(target=registration_db,
-            #                            args=(_sql_communication, values, conn_with_router))
-            # process.start()
             return data_list
         else:
             return None
@@ -322,9 +287,6 @@ class Router:
                              data_list.path[index], item_delay, data_list.slice_sign, True)
                     values.append(value)
                     index += 1
-                # process = threading.Thread(target=registration_db,
-                #                            args=(_sql_communication, values, conn_with_router))
-                # process.start()
                 self.communication_values.extend(values)
                 """负载容量不够，数据包丢失，统计数据"""
                 self.communication_loss_data += 1
@@ -353,9 +315,6 @@ class Router:
                     self.communication_values.extend(values)
                     values.clear()
                     del data
-            # process = threading.Thread(target=registration_db,
-            #                            args=(_sql_communication, values, conn_with_router))
-            # process.start()
 
     def deal_calculate_task(self):
         waiting_time = 0
@@ -369,9 +328,6 @@ class Router:
             values.append(value)
             del data
         if values:
-            # process = threading.Thread(target=registration_db,
-            #                            args=(_sql_calculate, values, conn_with_router))
-            # process.start()
             self.calculate_values.extend(values)
 
     def push_calculate_task(self, tasks: Union[CalculateData, List[CalculateData]]):

@@ -4,15 +4,6 @@ import numpy as np
 from numpy import float32
 from scipy.stats import norm
 
-'''
-def reword_for_delay(delay) -> float:
-    if delay == -1:
-        return 0.05
-    mean = 0
-    std_dev = 0.35 / np.sqrt(2 * np.pi)
-    return 0.35 * norm.pdf(delay, mean, std_dev)
-'''
-
 
 def reword_for_delay(delay) -> float:
     """求正态分布函数与一条平行于x轴的直线所围成的面积，传入的参数为直线的y坐标值。作为求时延的奖励函数"""
@@ -50,19 +41,6 @@ def reword_for_hash_rate(delay) -> float:
         return norm.cdf(_x, 0, std_dev) - \
             norm.cdf(-_x, 0, std_dev) - 2 * \
             _x * norm.pdf(_x, 0, std_dev)
-
-
-'''
-def reword_for_hash_rate(delay: float) -> float:
-    """求算力时延的奖励函数"""
-    # 正态分布的均值和标准差
-    """如果当前时间片没有处理计算任务就返回一个比较小的奖励值"""
-    if delay == -1:
-        return 0.05
-    mean = 0
-    std_dev = 0.35 / np.sqrt(2 * np.pi)
-    return 0.35 * norm.pdf(delay, mean, std_dev)
-'''
 
 
 def reword_for_package_loss_sensitive(loss: Union[None, bool]) -> float:
@@ -108,9 +86,9 @@ def reword(state: tuple):
     """将每个函数的元素应用到相应的参数上，求出原始奖励值"""
     result = np.vectorize(lambda f, x: f(x))(functions, arguments)
     """针对每个切片的每类资源的重要性所设置的权重参数"""
-    weights_for_points = np.array([[6, 2, 2],
-                                   [2, 6, 2],
-                                   [2, 2, 6]], dtype=int)
+    weights_for_points = np.array([[7, 1.5, 1.5],
+                                   [1.5, 7, 1.5],
+                                   [1.5, 1.5, 7]], dtype=int)
     """针对每类切片在总网络上的重要性所设置的参数,分别代表切片一，切片二，切片三"""
     weights_for_slice = np.array([[1, 0, 0],
                                   [0, 1, 0],

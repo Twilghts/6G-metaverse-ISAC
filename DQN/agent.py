@@ -558,7 +558,7 @@ class DQN:
         self.epsilon: float = 1.0  # 随机探索率
         self.epsilon_min: float = 0.05  # 最低随机探索率
         self.epsilon_decay: float = 0.997  # 探索率下降指数
-        self.learning_rate: float = 0.0008  # 学习率
+        self.learning_rate: float = 0.0005  # 学习率
         self.batch_size: int = 32
         self.memory: ReplyMemory = ReplyMemory()
         self.target_model = self._build_model()  # 目标模型
@@ -612,9 +612,6 @@ class DQN:
         self.dataset = tf.data.Dataset.from_tensor_slices((data, labels))
 
     def replay(self):
-        # dataset = dataset.shuffle(4096)  # 随机打乱数据
-        # dataset = dataset.batch(64)  # 批量化数据
-        # dataset = dataset.prefetch(1)  # 预取数据以提高性能
         self.policy_model.fit(self.dataset, batch_size=self.batch_size, epochs=_epochs, use_multiprocessing=True,
                               verbose=0)
         #  降低随机探索的概率

@@ -16,7 +16,7 @@ class CommunicationTask(Task):
         self.path = path
         self.communication_required: int = communication_required
         self.data_id = data_id
-        for i in range(self.communication_required):
+        for _ in range(self.communication_required):
             data = DataFactory.create_data(TypeOfData.communication_data,
                                            slice_sign=slice_sign, dataid=self.data_id, path=path)
             """向self.dataset中添加数据包，为转发做准备"""
@@ -29,6 +29,3 @@ class CommunicationTask(Task):
 
     def __str__(self):
         return f"CommunicationTask,要求的通信资源为:{self.communication_required}"
-
-    def set_property(self, *args):
-        pass

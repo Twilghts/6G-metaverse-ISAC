@@ -1,22 +1,4 @@
 
-6python:S125"Remove this commented out code.(ÓÜÙ­
-rpython:S3776€"TRefactor this function to reduce its Cognitive Complexity from 31 to the 15 allowed.(ßžùÅûÿÿÿÿ
-zpython:S4143Ø"\Verify this is the key that was intended; a value has already been saved for it on line 215.(Ù•‰Ïþÿÿÿÿ
-7python:S125Š"Remove this commented out code.(¦õ÷‡
-<python:S125”"Remove this commented out code.(®š£Çúÿÿÿÿ
-<python:S125˜"Remove this commented out code.(ñÇŽþÿÿÿÿ
-<python:S125¢"Remove this commented out code.(ëèáÞÿÿÿÿÿ
-<python:S125¦"Remove this commented out code.(þÛ„þÿÿÿÿ
-7python:S125°"Remove this commented out code.(»¿¾˜
-6python:S125´"Remove this commented out code.(€¡œz
-<python:S125»"Remove this commented out code.(ªœïŽÿÿÿÿÿ
-7python:S125¿"Remove this commented out code.(âÅØ©
-7python:S125Æ"Remove this commented out code.(ïœÚÖ
-<python:S125Ê"Remove this commented out code.(Þ¸úºüÿÿÿÿ
-<python:S125Ñ"Remove this commented out code.(êéñ¯ùÿÿÿÿ
-<python:S125©"Remove this commented out code.(ùÂˆêûÿÿÿÿ
-rpython:S3776°"TRefactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.(ÎŽ‘†úÿÿÿÿ
-<python:S125Å"Remove this commented out code.(ùÂˆêûÿÿÿÿ
-<python:S125ä"Remove this commented out code.(ùÂˆêûÿÿÿÿ
-<python:S125ô"Remove this commented out code.(ùÂˆêûÿÿÿÿ
-mpython:S3776ÿ"TRefactor this function to reduce its Cognitive Complexity from 25 to the 15 allowed.(¾úÎ 
+xpython:S3776~"TRefactor this function to reduce its Cognitive Complexity from 31 to the 15 allowed.(ßžùÅûÿÿÿÿ8§à‚Ì©1
+ypython:S3776"TRefactor this function to reduce its Cognitive Complexity from 18 to the 15 allowed.(ÎŽ‘†úÿÿÿÿ8§à‚Ì©1
+tpython:S3776Ó"TRefactor this function to reduce its Cognitive Complexity from 25 to the 15 allowed.(¾úÎ 8§à‚Ì©1

@@ -47,9 +47,6 @@ class Net:
         self.base_station: Dict[int, Router] = {
             number: Router(number) for number in [32, 33]
         }
-        # """更新图的边权值， 为其两头路由器容量之和的一半"""
-        # for u, v in self.core_graph.edges:
-        #     self.core_graph[u][v]['weight']: int = (self.core_routers[u].storage + self.core_routers[v].storage) // 2
         """网络连接组 为字典，键为起始路由器和终止路由器的元组，值为相对应的网络链接。"""
         self.link_bandwidth = [761, 443, 656, 655, 302, 488, 542, 673, 674, 624, 639, 678, 463, 426, 334, 254,
                                659, 327, 703, 888, 392, 468, 504, 656, 453, 251, 669, 509, 603, 661, 469, 371]
@@ -61,10 +58,10 @@ class Net:
             link.bandwidth = self.link_bandwidth[number]
 
     def __repr__(self):
-        pass
+        return ""
 
     def __str__(self):
-        pass
+        return ""
 
     def deal_data(self):
         for router in self.core_routers.values():
@@ -99,27 +96,21 @@ class Net:
                     self.core_routers[data.path[index]].push_sensor_data(data)
 
         for router in self.edge_routers_first.values():
-            while router.sensor_queue:
-                if len(self.base_station[32].sensor_queue) <= 300:
-                    """存取数据要记得增减负载值"""
-                    data = router.sensor_queue.pop()
-                    data.delay += 0.001
-                    router.sensor_load_slice[data.slice_sign] -= data.storage_required
-                    self.base_station[32].sensor_queue.append(data)
-                    data.current_router = 32
-                else:
-                    break
+            while router.sensor_queue and len(self.base_station[32].sensor_queue) <= 300:
+                """存取数据要记得增减负载值"""
+                data = router.sensor_queue.pop()
+                data.delay += 0.001
+                router.sensor_load_slice[data.slice_sign] -= data.storage_required
+                self.base_station[32].sensor_queue.append(data)
+                data.current_router = 32
 
         for router in self.edge_routers_second.values():
-            while router.sensor_queue:
-                if len(self.base_station[33].sensor_queue) <= 150:
-                    data = router.sensor_queue.pop()
-                    data.delay += 0.001
-                    router.sensor_load_slice[data.slice_sign] -= data.storage_required
-                    self.base_station[33].sensor_queue.append(data)
-                    data.current_router = 33
-                else:
-                    break
+            while router.sensor_queue and len(self.base_station[33].sensor_queue) <= 300:
+                data = router.sensor_queue.pop()
+                data.delay += 0.001
+                router.sensor_load_slice[data.slice_sign] -= data.storage_required
+                self.base_station[33].sensor_queue.append(data)
+                data.current_router = 33
 
         self.core_routers[0].push_sensor_data(self.base_station[32].sensor_queue)
         self.base_station[32].sensor_queue.clear()
@@ -140,7 +131,7 @@ class Net:
         plt.show()
 
     def save_picture(self):
-        # 保存图像为文件
+        """保存图像为文件"""
         # 使用spring布局绘制图形
         pos = nx.spring_layout(self.core_graph)
         nx.draw(self.core_graph, pos, with_labels=True)

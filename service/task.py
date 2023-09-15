@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 from typing import List, Union
 
 
@@ -11,13 +11,3 @@ class Task(ABC):
         self.dataset: List = []
         self.slice_id = slice_sign
         self.path = path
-
-    def __repr__(self):
-        pass
-
-    def __str__(self):
-        pass
-
-    @abstractmethod
-    def set_property(self, *args):
-        pass

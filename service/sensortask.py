@@ -15,7 +15,7 @@ class SensorTask(Task):
         self.data_id = data_id
         self.path = path
         self.specific_type = specific_type
-        for i in range(self.sensor_required):
+        for _ in range(self.sensor_required):
             data = DataFactory.create_data(TypeOfData.sensor_data, slice_sign=slice_sign,
                                            dataid=self.data_id, specific_type=specific_type, path=path)
             """向self.dataset中添加数据包，为转发做准备"""
@@ -28,6 +28,3 @@ class SensorTask(Task):
 
     def __str__(self):
         return f"SensorTask,要求的感知资源为:{self.sensor_required}"
-
-    def set_property(self, *args):
-        pass

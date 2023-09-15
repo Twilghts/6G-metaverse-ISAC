@@ -32,7 +32,7 @@ if __name__ == '__main__':
                      'VALUES (%s, %s, %s, %s, %s)'
 
     _sql_sensor = 'INSERT INTO "sensordatadb_comparison" (id, time, router_id, slice_id, ' \
-                  'is_loss, delay, specific_type)' 'VALUES (%s, %s, %s, %s, %s, %s, %s)'
+                  'is_loss, delay, specific_type)' + 'VALUES (%s, %s, %s, %s, %s, %s, %s)'
 
     _cursor_pool[0].execute("SELECT value FROM keyvalues_comparison where key = 'taskid'")
     task_id = _cursor_pool[0].fetchone()[0]

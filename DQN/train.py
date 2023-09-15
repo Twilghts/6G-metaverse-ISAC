@@ -55,32 +55,6 @@ def random_slice(_number: int):
 
 
 if __name__ == '__main__':
-    # _conn_in_train = psycopg2.connect(
-    #     host="localhost",
-    #     port="5432",
-    #     database="postgres",
-    #     user="postgres",
-    #     password="rkw2536153"
-    # )
-    # _cursor_pool = []
-    # for number in range(50):
-    #     _cursor_pool.append(_conn_in_train.cursor())
-    # _update_keyvalue_task = "UPDATE keyvalues SET value = %s WHERE key = 'taskid'"
-    # _update_keyvalue_data = "UPDATE keyvalues SET value = %s WHERE key = 'dataid'"
-    #
-    # _sql_communication = 'INSERT INTO "communicationdatadb"(id, timestamp,  router_sign, delay, slice_sign,
-    # is_loss )' \ 'VALUES (%s, %s, %s, %s, %s, %s)'
-    #
-    # _sql_calculate = 'INSERT INTO "calculatedatadb" (id, time,  router_id, delay, slice_sign)  ' \
-    #                  'VALUES (%s, %s, %s, %s, %s)'
-    #
-    # _sql_sensor = 'INSERT INTO "sensordatadb" (id, time,  router_id, slice_id, is_loss, delay, specific_type)  ' \
-    #               'VALUES (%s, %s, %s, %s, %s, %s, %s)'
-    #
-    # _cursor_pool[0].execute("SELECT value FROM keyvalues where key = 'taskid'")
-    # task_id = _cursor_pool[0].fetchone()[0]
-    # _cursor_pool[0].execute("SELECT value FROM keyvalues where key = 'dataid'")
-    # data_id = _cursor_pool[0].fetchone()[0]
     task_id = 0
     data_id = 0
     start_time = time.perf_counter()
@@ -152,28 +126,8 @@ if __name__ == '__main__':
             task_set |= tem_set
             del tem_set
         print(time.perf_counter() - start_time)
-        # memory_usage = psutil.virtual_memory()
-        # print(f"Memory Usage: {memory_usage.percent}%")
-        # if memory_usage.percent >= 80:
-        #     for router in _net.core_routers.values():
-        #         registration_db(_sql_communication, router.communication_values, _conn_in_train,
-        #                         random.choice(_cursor_pool))
-        #         router.communication_values.clear()
-        #         registration_db(_sql_calculate, router.calculate_values, _conn_in_train, random.choice(_cursor_pool))
-        #         router.calculate_values.clear()
-        #         registration_db(_sql_sensor, router.sensor_values, _conn_in_train, random.choice(_cursor_pool))
-        #         router.sensor_values.clear()
-    # """全部结束后的统一信息存储"""
+    """全部结束后的统一信息存储"""
     for router in net.core_routers.values():
-        # registration_db(_sql_communication, router.communication_values, _conn_in_train, random.choice(_cursor_pool))
-        # router.communication_values.clear()
-        # registration_db(_sql_calculate, router.calculate_values, _conn_in_train, random.choice(_cursor_pool))
-        # router.calculate_values.clear()
-        # registration_db(_sql_sensor, router.sensor_values, _conn_in_train, random.choice(_cursor_pool))
-        # router.sensor_values.clear()
-        filename = "model_69_" + str(router.sign)
+        filename = "model_70_" + str(router.sign)
         router.agent.target_model.save(f"../resource/{filename}")
-    # _cursor_pool[0].execute(_update_keyvalue_task, (task_id,))
-    # _cursor_pool[0].execute(_update_keyvalue_data, (data_id,))
-    # _conn_in_train.commit()
     print(time.perf_counter() - start_time)

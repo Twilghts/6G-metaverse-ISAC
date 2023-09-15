@@ -1,8 +1,2 @@
 
-¤python:S935?"‡Return a value of type `str` in this method. Consider explicitly raising a TypeError if this class is not meant to support this method.(Šûóúûÿÿÿÿ
-Ÿpython:S935B"‡Return a value of type `str` in this method. Consider explicitly raising a TypeError if this class is not meant to support this method.(ŒüÂ¶
-;python:S1252"Remove this commented out code.(ˆ¦ªúûÿÿÿÿ
-vpython:S1186?"YAdd a nested comment explaining why this method is empty, or complete the implementation.(Šûóúûÿÿÿÿ
-qpython:S1186B"YAdd a nested comment explaining why this method is empty, or complete the implementation.(ŒüÂ¶
-qpython:S3776E"TRefactor this function to reduce its Cognitive Complexity from 35 to the 15 allowed.(¢Á±Şùÿÿÿÿ
-7python:S125"Remove this commented out code.(¾ˆÕì
+xpython:S3776B"TRefactor this function to reduce its Cognitive Complexity from 29 to the 15 allowed.(¢Á±Şùÿÿÿÿ8ôá‚Ì©1
