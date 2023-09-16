@@ -8,10 +8,10 @@ import numpy as np
 import tensorflow as tf
 
 ######################################################################
-# Replay Memory(回访缓存大小)
-_capacity = 3000
+# Replay Memory(回放缓存大小)
+_capacity = 4000
 _transition = namedtuple('_transition', ('state', 'action_index', 'next_state', 'reward'))
-_epochs = 3
+_epochs = 4
 
 
 class ReplyMemory(object):
@@ -557,7 +557,7 @@ class DQN:
         self.gamma: float = 0.95  # 折扣率
         self.epsilon: float = 1.0  # 随机探索率
         self.epsilon_min: float = 0.05  # 最低随机探索率
-        self.epsilon_decay: float = 0.997  # 探索率下降指数
+        self.epsilon_decay: float = 0.995  # 探索率下降指数
         self.learning_rate: float = 0.0005  # 学习率
         self.batch_size: int = 32
         self.memory: ReplyMemory = ReplyMemory()
