@@ -65,6 +65,11 @@ class Router:
                 1: -1,  # 切片一
                 2: -1,  # 切片二
                 3: -1  # 切片三
+            },
+            4: {  # storage && bandwidth
+                1: -1,  # 切片一
+                2: -1,  # 切片二
+                3: -1  # 切片三
             }
         }
         self.state: List[List[Union[float, None]]] = [[-2, -1, -1], [-1, -1, -1], [None, None, None]]
@@ -222,6 +227,14 @@ class Router:
             for col in range(1, 4):
                 self.distribution[row][col] = action[row - 1][col - 1]
 
+        self.distribution[4][1] = self.distribution[1][1] * (10 / 18)
+        self.distribution[4][2] = self.distribution[1][2] * (10 / 18)
+        self.distribution[4][3] = self.distribution[1][3] * (10 / 18)
+
+        self.distribution[1][1] *= (8 / 18)
+        self.distribution[1][2] *= (8 / 18)
+        self.distribution[1][3] *= (8 / 18)
+
     def put_task(self, task: Task):
         if isinstance(task, communicationtask.CommunicationTask):
             self.push_data_communication(task.dataset)
@@ -243,6 +256,7 @@ class Router:
             data.delay_every_step.append(waiting_time + data.delay)
             """为计算奖励值做准备"""
             self.communication_reward_log[data.slice_sign].append(waiting_time + data.delay)
+            data.delay = 0
             """对已到达终点的数据包进行特殊处理"""
             if data.path[-1] == self.sign:
                 """代表数据包一路上经过的路由器序号"""
@@ -390,10 +404,11 @@ class Router:
             """临时承载数据包"""
             data: SensorData = self.sensor_queue.pop()
             if self.sign != data.path[-1]:
-                cumulative_delay += data.storage_required / (self.bandwidth * self.distribution[1][data.slice_sign])
+                cumulative_delay += data.storage_required / (self.bandwidth * self.distribution[4][data.slice_sign])
                 data.delay_every_step.append(cumulative_delay + data.delay)  # 时延累加
                 """为计算奖励值做准备"""
                 self.sensor_communication_reward_log[data.slice_sign].append(cumulative_delay + data.delay)
+                data.delay = 0
                 passing_dataset.append(data)
                 self.sensor_load_slice[data.slice_sign] -= data.storage_required
                 continue

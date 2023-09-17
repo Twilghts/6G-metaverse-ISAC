@@ -1,5 +1,5 @@
 from collections import deque
-from typing import Union, List
+from typing import Union, List, Dict
 from data import CommunicationData
 
 
@@ -10,10 +10,17 @@ class Link:
         self.bandwidth: int = bandwidth
         """与通信相关的参数"""
         self.cache_queue_communication = deque()
-        self.communication_distribution = {
-            1: -1,
-            2: -1,
-            3: -1
+        self.communication_distribution: Dict[int:Dict[int, int]] = {
+            1: {  # bandwidth
+                1: -1,
+                2: -1,
+                3: -1
+            },
+            2: {  # bandwidth && storage
+                1: -1,
+                2: -1,
+                3: -1
+            }
         }
 
     def __repr__(self):
@@ -30,6 +37,6 @@ class Link:
             tem_list: List[CommunicationData] = []
             for data in dataset:
                 data.delay = data.bandwidth_required / \
-                             (self.communication_distribution[data.slice_sign] * self.bandwidth)
+                             (self.communication_distribution[1][data.slice_sign] * self.bandwidth)
                 tem_list.append(data)
         return tem_list
