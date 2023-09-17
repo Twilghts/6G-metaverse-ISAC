@@ -75,11 +75,11 @@ class Net:
                     if ports in self.links.keys():
                         data.delay = data.bandwidth_required / \
                                      (self.links[ports].bandwidth *
-                                      self.links[ports].communication_distribution[data.slice_sign])
+                                      self.links[ports].communication_distribution[1][data.slice_sign])
                     else:
                         data.delay = data.bandwidth_required / \
                                      (self.links[ports[::-1]].bandwidth *
-                                      self.links[ports[::-1]].communication_distribution[data.slice_sign])
+                                      self.links[ports[::-1]].communication_distribution[1][data.slice_sign])
                     self.core_routers[data.path[index]].push_data_communication(data)
             if passing_dataset:
                 for data in passing_dataset:
@@ -88,11 +88,11 @@ class Net:
                     if ports in self.links.keys():
                         data.delay = data.storage_required / \
                                      (self.links[ports].bandwidth *
-                                      self.links[ports].communication_distribution[data.slice_sign])
+                                      self.links[ports].communication_distribution[2][data.slice_sign])
                     else:
                         data.delay = data.storage_required / \
                                      (self.links[ports[::-1]].bandwidth *
-                                      self.links[ports[::-1]].communication_distribution[data.slice_sign])
+                                      self.links[ports[::-1]].communication_distribution[2][data.slice_sign])
                     self.core_routers[data.path[index]].push_sensor_data(data)
 
         for router in self.edge_routers_first.values():
@@ -145,9 +145,9 @@ class Net:
     def initialize(self):
         for router in self.core_routers.values():
             # 针对路由器带宽资源的初始化，切片一是主要处理通信业务的
-            router.distribution[1][1] = 0.625
-            router.distribution[1][2] = 0.1475
-            router.distribution[1][3] = 0.1475
+            router.distribution[1][1] = 0.625 * (8 / 18)
+            router.distribution[1][2] = 0.1475 * (8 / 18)
+            router.distribution[1][3] = 0.1475 * (8 / 18)
             # 针对路由器计算资源的初始化，切片二是主要处理计算业务的
             router.distribution[2][1] = 0.2
             router.distribution[2][2] = 0.6
@@ -156,17 +156,26 @@ class Net:
             router.distribution[3][1] = 0.15
             router.distribution[3][2] = 0.15
             router.distribution[3][3] = 0.7
+            # 针对路由器带宽资源传感部分的初始化，切片四是主要处理通信的传感部分业务的
+            router.distribution[4][1] = 0.625 * (10 / 18)
+            router.distribution[4][2] = 0.1475 * (10 / 18)
+            router.distribution[4][3] = 0.1475 * (10 / 18)
+
         for link in self.links.values():
             # 针对链路带宽资源的初始化，切片一是主要处理通信业务的
-            link.communication_distribution[1] = 0.625
-            link.communication_distribution[2] = 0.1475
-            link.communication_distribution[3] = 0.1475
+            link.communication_distribution[1][1] = 0.625 * (8 / 18)
+            link.communication_distribution[1][2] = 0.1475 * (8 / 18)
+            link.communication_distribution[1][3] = 0.1475 * (8 / 18)
+            # 针对链路带宽资源的传感部分的初始化，切片一是主要处理通信业务的
+            link.communication_distribution[2][1] = 0.625 * (10 / 18)
+            link.communication_distribution[2][2] = 0.1475 * (10 / 18)
+            link.communication_distribution[2][3] = 0.1475 * (10 / 18)
 
         for router in self.edge_routers_first.values():
             # 针对路由器带宽资源的初始化，切片一是主要处理通信业务的
-            router.distribution[1][1] = 0.625
-            router.distribution[1][2] = 0.1475
-            router.distribution[1][3] = 0.1475
+            router.distribution[1][1] = 0.625 * (8 / 18)
+            router.distribution[1][2] = 0.1475 * (8 / 18)
+            router.distribution[1][3] = 0.1475 * (8 / 18)
             # 针对路由器计算资源的初始化，切片二是主要处理计算业务的
             router.distribution[2][1] = 0.2
             router.distribution[2][2] = 0.6
@@ -175,12 +184,16 @@ class Net:
             router.distribution[3][1] = 0.15
             router.distribution[3][2] = 0.15
             router.distribution[3][3] = 0.7
+            # 针对路由器带宽资源传感部分的初始化，切片四是主要处理通信的传感部分业务的
+            router.distribution[4][1] = 0.625 * (10 / 18)
+            router.distribution[4][2] = 0.1475 * (10 / 18)
+            router.distribution[4][3] = 0.1475 * (10 / 18)
 
         for router in self.edge_routers_second.values():
             # 针对路由器带宽资源的初始化，切片一是主要处理通信业务的
-            router.distribution[1][1] = 0.625
-            router.distribution[1][2] = 0.1475
-            router.distribution[1][3] = 0.1475
+            router.distribution[1][1] = 0.625 * (8 / 18)
+            router.distribution[1][2] = 0.1475 * (8 / 18)
+            router.distribution[1][3] = 0.1475 * (8 / 18)
             # 针对路由器计算资源的初始化，切片二是主要处理计算业务的
             router.distribution[2][1] = 0.2
             router.distribution[2][2] = 0.6
@@ -189,15 +202,32 @@ class Net:
             router.distribution[3][1] = 0.15
             router.distribution[3][2] = 0.15
             router.distribution[3][3] = 0.7
+            # 针对路由器带宽资源传感部分的初始化，切片四是主要处理通信的传感部分业务的
+            router.distribution[4][1] = 0.625 * (10 / 18)
+            router.distribution[4][2] = 0.1475 * (10 / 18)
+            router.distribution[4][3] = 0.1475 * (10 / 18)
 
     def act_in_links(self):
         for link in self.links.values():
-            link.communication_distribution[1] = (self.core_routers[link.ports[0]].distribution[1][1] +
-                                                  self.core_routers[link.ports[1]].distribution[1][1]) / 2
-            link.communication_distribution[2] = (self.core_routers[link.ports[0]].distribution[1][2] +
-                                                  self.core_routers[link.ports[1]].distribution[1][2]) / 2
-            link.communication_distribution[3] = (self.core_routers[link.ports[0]].distribution[1][3] +
-                                                  self.core_routers[link.ports[1]].distribution[1][3]) / 2
+            link.communication_distribution[1][1] = (((self.core_routers[link.ports[0]].distribution[1][1] +
+                                                       self.core_routers[link.ports[1]].distribution[1][1])
+                                                      / 2) * (8 / 18))
+            link.communication_distribution[1][2] = ((self.core_routers[link.ports[0]].distribution[1][2] +
+                                                      self.core_routers[link.ports[1]].distribution[1][2])
+                                                     / 2) * (8 / 18)
+            link.communication_distribution[1][3] = ((self.core_routers[link.ports[0]].distribution[1][3] +
+                                                      self.core_routers[link.ports[1]].distribution[1][3])
+                                                     / 2) * (8 / 18)
+
+            link.communication_distribution[2][1] = (((self.core_routers[link.ports[0]].distribution[4][1] +
+                                                       self.core_routers[link.ports[1]].distribution[4][1])
+                                                      / 2) * (10 / 18))
+            link.communication_distribution[2][2] = ((self.core_routers[link.ports[0]].distribution[4][2] +
+                                                      self.core_routers[link.ports[1]].distribution[4][2])
+                                                     / 2) * (10 / 18)
+            link.communication_distribution[2][3] = ((self.core_routers[link.ports[0]].distribution[4][3] +
+                                                      self.core_routers[link.ports[1]].distribution[4][3])
+                                                     / 2) * (10 / 18)
 
     def chose_paths(self) -> Dict[int, List[List[int]]]:
         paths: Dict[int, List[List[int]]] = {
