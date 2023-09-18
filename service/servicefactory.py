@@ -21,10 +21,10 @@ class TaskFactory:
                     path: Union[List[int], None] = None) -> Task:
         if task_type == TypeOfTask.communication_task:
             return CommunicationTask(slice_sign=slice_sign, path=path, task_id=task_id, data_id=data_id,
-                                     communication_required=random.randint(6, 18))
+                                     communication_required=random.randint(2, 8))
         elif task_type == TypeOfTask.calculate_task:
             return CalculateTask(slice_sign=slice_sign, task_id=task_id, data_id=data_id,
                                  calculate_required=random.randint(2, 6))
         elif task_type == TypeOfTask.sensor_task:
             return SensorTask(slice_sign=slice_sign, path=path, task_id=task_id, data_id=data_id,
-                              sensor_required=random.randint(2, 8), specific_type=random.randint(1, 2))
+                              sensor_required=random.randint(6, 18), specific_type=random.randint(1, 2))
