@@ -21,7 +21,7 @@ class TaskFactory:
                     path: Union[List[int], None] = None) -> Task:
         if task_type == TypeOfTask.communication_task:
             return CommunicationTask(slice_sign=slice_sign, path=path, task_id=task_id, data_id=data_id,
-                                     communication_required=random.randint(8, 24))
+                                     communication_required=random.randint(9, 27))
         elif task_type == TypeOfTask.calculate_task:
             return CalculateTask(slice_sign=slice_sign, task_id=task_id, data_id=data_id,
                                  calculate_required=random.randint(2, 6))
