@@ -14,12 +14,25 @@ def registration_db(sql, values, conn, cursor):
     conn.commit()
 
 
-def choose_router_index_by_calculate_weight(_net: Net):
-    random_number = random.randint(0, _net.total_calculate_weight)
-    index: int = 0
-    while sum(_net.router_calculate[:index + 1]) < random_number:
-        index += 1
-    return index
+def choose_router_index_by_calculate_weight(_net: Net, _task: Task = None):
+    if _task.slice_id == 1:
+        index: int = 0
+        random_number = random.randint(0, int(sum(_net.calculate_slice_1)))
+        while sum(_net.calculate_slice_1[:index + 1]) < random_number:
+            index += 1
+        return index
+    elif _task.slice_id == 2:
+        index: int = 0
+        random_number = random.randint(0, int(sum(_net.calculate_slice_2)))
+        while sum(_net.calculate_slice_2[:index + 1]) < random_number:
+            index += 1
+        return index
+    else:
+        index: int = 0
+        random_number = random.randint(0, int(sum(_net.calculate_slice_3)))
+        while sum(_net.calculate_slice_3[:index + 1]) < random_number:
+            index += 1
+        return index
 
 
 def build_task_set(_number: int, _paths: Dict[int, List[List[int]]], _task_id: int, _data_id: int) \
@@ -74,15 +87,16 @@ if __name__ == '__main__':
                 else:
                     random.choice(list(net.edge_routers_second.values())).put_task(task)
             else:
-                random_index = choose_router_index_by_calculate_weight(_net=net)
+                random_index = choose_router_index_by_calculate_weight(_net=net, _task=task)
                 net.core_routers[random_index].put_task(task)
                 # random.choice(list(net.core_routers.values())).put_task(task)
             if j == 25:
                 net.deal_data()
         for router in net.core_routers.values():
             router.markov()
-        """改变链路的带宽资源分配情况"""
+        """改变链路的带宽资源分配情况,更新计算资源的分配情况，为之后做准备"""
         net.act_in_links()
+        net.act_calculate_slice()
         """处理上一个状态遗留下来的数据，并且利用动作更新分配标准"""
         net.deal_data()
         """选择通信链路的任务路径"""
@@ -109,7 +123,7 @@ if __name__ == '__main__':
                     else:
                         random.choice(list(net.edge_routers_second.values())).put_task(task)
                 else:
-                    random_index = choose_router_index_by_calculate_weight(_net=net)
+                    random_index = choose_router_index_by_calculate_weight(_net=net, _task=task)
                     net.core_routers[random_index].put_task(task)
                     # random.choice(list(net.core_routers.values())).put_task(task)
                 if j == 25:
@@ -118,6 +132,7 @@ if __name__ == '__main__':
                 router.markov()
             """改变链路的带宽资源分配情况"""
             net.act_in_links()
+            net.act_calculate_slice()
             """处理上一个状态遗留下来的数据，并且利用动作更新分配标准"""
             net.deal_data()
             """选择通信链路的任务路径"""
@@ -128,6 +143,6 @@ if __name__ == '__main__':
         print(time.perf_counter() - start_time)
     """全部结束后的统一信息存储"""
     for router in net.core_routers.values():
-        filename = "model_82_" + str(router.sign)
+        filename = "model_83_" + str(router.sign)
         router.agent.target_model.save(f"../resource/{filename}")
     print(time.perf_counter() - start_time)

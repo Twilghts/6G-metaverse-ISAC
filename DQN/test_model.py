@@ -40,7 +40,7 @@ if __name__ == '__main__':
     start_time = time.perf_counter()
     test_net = Net()
     for router in test_net.core_routers.values():
-        filename = "model_82_" + str(router.sign)
+        filename = "model_83_" + str(router.sign)
         router.agent.target_model = tf.keras.models.load_model(f"../resource/{filename}")
     test_net.initialize()
     paths = test_net.chose_paths()
@@ -57,7 +57,7 @@ if __name__ == '__main__':
                 else:
                     random.choice(list(test_net.edge_routers_second.values())).put_task(task)
             else:
-                random_index = choose_router_index_by_calculate_weight(_net=test_net)
+                random_index = choose_router_index_by_calculate_weight(_net=test_net, _task=task)
                 test_net.core_routers[random_index].put_task(task)
                 # random.choice(list(test_net.core_routers.values())).put_task(task)
             if j == 25:
@@ -66,6 +66,7 @@ if __name__ == '__main__':
             router.markov(is_test=True, is_best=True)
         """改变链路的带宽资源分配情况"""
         test_net.act_in_links()
+        test_net.act_calculate_slice()
         """处理上一个状态遗留下来的数据，并且利用动作更新分配标准"""
         test_net.deal_data()
         """选择通信链路的任务路径"""

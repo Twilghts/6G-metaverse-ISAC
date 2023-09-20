@@ -38,6 +38,10 @@ class Net:
             number: Router(number, storage=self.router_storage[number], computing_power=self.router_calculate[number],
                            bandwidth=self.router_bandwidth[number]) for number in range(0, 16)
         }
+        """为按照概率分配做准备"""
+        self.calculate_slice_1 = []
+        self.calculate_slice_2 = []
+        self.calculate_slice_3 = []
         self.edge_routers_first: Dict[int, Router] = {
             number: Router(number) for number in range(16, 24)
         }
@@ -206,6 +210,13 @@ class Net:
             router.distribution[4][1] = 0.625 * (10 / 18)
             router.distribution[4][2] = 0.1475 * (10 / 18)
             router.distribution[4][3] = 0.1475 * (10 / 18)
+        """为按照概率分配做准备"""
+        self.calculate_slice_1 = [router.computing_power * router.distribution[2][1] for router in
+                                  self.core_routers.values()]
+        self.calculate_slice_2 = [router.computing_power * router.distribution[2][2] for router in
+                                  self.core_routers.values()]
+        self.calculate_slice_3 = [router.computing_power * router.distribution[2][3] for router in
+                                  self.core_routers.values()]
 
     def act_in_links(self):
         for link in self.links.values():
@@ -276,3 +287,12 @@ class Net:
         paths[6] = [nx.shortest_path(tem_graph_slice_3, source=source, target=target)
                     for source in sensor_start_node for target in sensor_target_node]
         return paths
+
+    def act_calculate_slice(self):
+        """为按照概率分配做准备"""
+        self.calculate_slice_1 = [router.computing_power * router.distribution[2][1] for router in
+                                  self.core_routers.values()]
+        self.calculate_slice_2 = [router.computing_power * router.distribution[2][2] for router in
+                                  self.core_routers.values()]
+        self.calculate_slice_3 = [router.computing_power * router.distribution[2][3] for router in
+                                  self.core_routers.values()]
