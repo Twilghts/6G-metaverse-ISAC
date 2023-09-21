@@ -40,7 +40,7 @@ if __name__ == '__main__':
     start_time = time.perf_counter()
     test_net = Net()
     for router in test_net.core_routers.values():
-        filename = "model_83_" + str(router.sign)
+        filename = "model_84_" + str(router.sign)
         router.agent.target_model = tf.keras.models.load_model(f"../resource/{filename}")
     test_net.initialize()
     paths = test_net.chose_paths()
