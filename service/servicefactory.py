@@ -24,7 +24,7 @@ class TaskFactory:
                                      communication_required=random.randint(12, 36))
         elif task_type == TypeOfTask.calculate_task:
             return CalculateTask(slice_sign=slice_sign, task_id=task_id, data_id=data_id,
-                                 calculate_required=random.randint(4, 12))
+                                 calculate_required=random.randint(6, 18))
         elif task_type == TypeOfTask.sensor_task:
             return SensorTask(slice_sign=slice_sign, path=path, task_id=task_id, data_id=data_id,
                               sensor_required=random.randint(3, 12), specific_type=random.randint(1, 2))
