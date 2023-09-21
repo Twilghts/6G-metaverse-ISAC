@@ -58,7 +58,7 @@ def reword_for_package_loss_insensitive(loss: Union[None, bool]) -> float:
     """丢包率不敏感的切片的丢包率奖励函数"""
     """如果当前时间片没有处理存储任务就返回一个折中的奖励值"""
     if loss is None:
-        return 0.03
+        return 0.003
     elif loss != 0:
         return 0
     else:

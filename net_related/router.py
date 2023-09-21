@@ -131,11 +131,11 @@ class Router:
     def markov(self, is_dqn: bool = True, is_test: bool = False, is_best: bool = False):
         """更新状态，选择动作，计算奖励，向回放缓存中添加数据，完成一次马尔可夫过程，处理部分数据"""
         """以下为计算奖励值的过程"""
-        sensor_slice_1 = self.sensor_reward_log[1]
+        sensor_slice_1: bool = self.sensor_reward_log[1]
         self.sensor_reward_log[1] = None
-        sensor_slice_2 = self.sensor_reward_log[2]
+        sensor_slice_2: bool = self.sensor_reward_log[2]
         self.sensor_reward_log[2] = None
-        sensor_slice_3 = self.sensor_reward_log[3]
+        sensor_slice_3: bool = self.sensor_reward_log[3]
         self.sensor_reward_log[3] = None
         if self.communication_reward_log[1] or self.sensor_communication_reward_log[1]:
             communication_slice_1 = \
