@@ -24,8 +24,7 @@ class Net:
             number: int(number) for number in self.core_graph.nodes
         }
         self.core_graph: nx.Graph = nx.relabel_nodes(self.core_graph, relabel_table)
-        self.router_storage = [2222, 1386, 1602, 2235, 1961, 2263, 3089, 852, 1746, 2525, 3170, 472, 1884, 2520,
-                               2816, 2362]
+        self.router_storage = [222, 138, 160, 223, 196, 226, 308, 85, 174, 252, 317, 47, 188, 252, 281, 236]
         self.router_storage.sort(reverse=True)
         self.router_calculate = [420, 293, 363, 297, 423, 396, 368, 489, 388, 421, 428, 316, 341, 282, 382, 451]
         """用作为计算类任务根据路由器计算资源随机选择路由器"""

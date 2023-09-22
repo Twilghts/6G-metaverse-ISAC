@@ -140,18 +140,9 @@ if __name__ == '__main__':
             tem_set, task_id, data_id = build_task_set(50, paths, _task_id=task_id, _data_id=data_id)
             task_set |= tem_set
             del tem_set
-        for router in net.core_routers.values():
-            # TODO : Codebase Bloat 下次删除下述代码
-            if router.sensor_success_number + router.sensor_loss_number == 0:
-                print(f"路由器序号:{router.sign}，本轮训练过程中未有状态切换的数据包")
-            else:
-                print(f"路由器序号:{router.sign}，router丢包率为"
-                      f":{router.sensor_loss_number/(router.sensor_success_number+router.sensor_loss_number)*100}%")
-                router.sensor_loss_number = 0
-                router.sensor_success_number = 0
         print(time.perf_counter() - start_time)
     """全部结束后的统一信息存储"""
     for router in net.core_routers.values():
-        filename = "model_87_" + str(router.sign)
+        filename = "model_88_" + str(router.sign)
         router.agent.target_model.save(f"../resource/{filename}")
     print(time.perf_counter() - start_time)
