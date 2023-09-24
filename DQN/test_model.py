@@ -44,10 +44,10 @@ if __name__ == '__main__':
         router.agent.target_model = tf.keras.models.load_model(f"../resource/{filename}")
     test_net.initialize()
     paths = test_net.chose_paths()
-    test_task_set, task_id, data_id = build_task_set(200, paths, _task_id=task_id, _data_id=data_id)
-    for total_epoch in range(1000):
+    test_task_set, task_id, data_id = build_task_set(400, paths, _task_id=task_id, _data_id=data_id)
+    for total_epoch in range(300):
         print(f"第{total_epoch}轮")
-        for j in range(50):
+        for j in range(300):
             task = test_task_set.pop()
             if isinstance(task, communicationtask.CommunicationTask):
                 test_net.core_routers[task.path[0]].put_task(task)
@@ -60,7 +60,7 @@ if __name__ == '__main__':
                 random_index = choose_router_index_by_calculate_weight(_net=test_net, _task=task)
                 test_net.core_routers[random_index].put_task(task)
                 # random.choice(list(test_net.core_routers.values())).put_task(task)
-            if j == 25:
+            if j % 25 == 0:
                 test_net.deal_data()
         for router in test_net.core_routers.values():
             router.markov(is_test=True, is_best=True)

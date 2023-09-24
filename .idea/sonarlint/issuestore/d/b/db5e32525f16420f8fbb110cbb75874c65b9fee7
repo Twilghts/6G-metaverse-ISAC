@@ -1,0 +1,10 @@
+
+>python:S1481“"%Remove the unused local variable "i".(‘ä—˜
+>python:S1481‘"%Remove the unused local variable "i".(ÿ¦íŠ
+Gpython:S1481„".Replace unused local variable "info" with "_".(å¨êÅ
+Mpython:S1481Ö"4Replace unused local variable "summary_op" with "_".(ëÊ›¤
+rpython:S3776Ä"TRefactor this function to reduce its Cognitive Complexity from 35 to the 15 allowed.(ê¥õíşÿÿÿÿ
+>python:S1481ï"%Remove the unused local variable "i".(ş¼—ê
+>python:S1481†"%Remove the unused local variable "i".(ƒ°Ñú
+Fpython:S1481¼"-Remove the unused local variable "i_episode".(İÎÊ
+Gpython:S1481Ä".Replace unused local variable "info" with "_".(å¨êÅ

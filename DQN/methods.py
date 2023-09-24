@@ -43,26 +43,42 @@ def reword_for_hash_rate(delay) -> float:
             _x * norm.pdf(_x, 0, std_dev)
 
 
-def reword_for_package_loss_sensitive(loss: Union[None, bool]) -> float:
+def reword_for_package_loss_sensitive(loss: Union[None, float]) -> float:
     """丢包率敏感的切片的丢包率奖励函数"""
     """如果当前时间片没有处理存储任务就返回一个折中的奖励值"""
     if loss is None:
         return 0.03
-    elif loss:
-        return 0
-    else:
+    elif loss == 0:
         return 1
+    elif loss <= 0.1:
+        return 0.8
+    elif loss <= 0.2:
+        return 0.6
+    elif loss <= 0.3:
+        return 0.4
+    elif loss <= 0.4:
+        return 0.2
+    else:
+        return 0
 
 
-def reword_for_package_loss_insensitive(loss: Union[None, bool]) -> float:
+def reword_for_package_loss_insensitive(loss: Union[None, float]) -> float:
     """丢包率不敏感的切片的丢包率奖励函数"""
     """如果当前时间片没有处理存储任务就返回一个折中的奖励值"""
     if loss is None:
         return 0.003
-    elif loss != 0:
-        return 0
-    else:
+    elif loss == 0:
         return 0.1
+    elif loss <= 0.1:
+        return 0.08
+    elif loss <= 0.2:
+        return 0.06
+    elif loss <= 0.3:
+        return 0.04
+    elif loss <= 0.4:
+        return 0.02
+    else:
+        return 0
 
 
 def reword(state: tuple):

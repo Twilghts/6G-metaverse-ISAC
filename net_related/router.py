@@ -101,8 +101,16 @@ class Router:
         }
         """与存储相关的参数"""
         self.sensor_queue = deque()
-        self.sensor_success_number = 0
-        self.sensor_loss_number = 0
+        self.sensor_success_number: Dict[int, float] = {
+            1: 0,
+            2: 0,
+            3: 0
+        }
+        self.sensor_loss_number: Dict[int, float] = {
+            1: 0,
+            2: 0,
+            3: 0
+        }
         self.sensor_cache_slice_1: int = 0
         self.sensor_cache_slice_2: int = 0
         self.sensor_cache_slice_3: int = 0
@@ -110,11 +118,6 @@ class Router:
             1: self.sensor_cache_slice_1,
             2: self.sensor_cache_slice_2,
             3: self.sensor_cache_slice_3
-        }
-        self.sensor_reward_log: Dict[int, Union[None, bool]] = {
-            1: None,
-            2: None,
-            3: None
         }
         self.sensor_communication_reward_log: Dict[int, List[float]] = {
             1: [],
@@ -130,13 +133,30 @@ class Router:
 
     def markov(self, is_dqn: bool = True, is_test: bool = False, is_best: bool = False):
         """更新状态，选择动作，计算奖励，向回放缓存中添加数据，完成一次马尔可夫过程，处理部分数据"""
+        sensor_slice_1: Union[None, float] = None
         """以下为计算奖励值的过程"""
-        sensor_slice_1: bool = self.sensor_reward_log[1]
-        self.sensor_reward_log[1] = None
-        sensor_slice_2: bool = self.sensor_reward_log[2]
-        self.sensor_reward_log[2] = None
-        sensor_slice_3: bool = self.sensor_reward_log[3]
-        self.sensor_reward_log[3] = None
+        if self.sensor_loss_number[1] + self.sensor_success_number[1] != 0:
+            sensor_slice_1: Union[None, float] = \
+                self.sensor_loss_number[1] / (self.sensor_success_number[1] + self.sensor_loss_number[1])
+            self.sensor_loss_number[1] = 0
+            self.sensor_success_number[1] = 0
+
+        sensor_slice_2: Union[None, float] = None
+        """以下为计算奖励值的过程"""
+        if self.sensor_loss_number[2] + self.sensor_success_number[2] != 0:
+            sensor_slice_2: Union[None, float] = \
+                self.sensor_loss_number[2] / (self.sensor_success_number[2] + self.sensor_loss_number[2])
+            self.sensor_loss_number[2] = 0
+            self.sensor_success_number[2] = 0
+
+        sensor_slice_3: Union[None, float] = None
+        """以下为计算奖励值的过程"""
+        if self.sensor_loss_number[3] + self.sensor_success_number[3] != 0:
+            sensor_slice_1: Union[None, float] = \
+                self.sensor_loss_number[3] / (self.sensor_success_number[3] + self.sensor_loss_number[3])
+            self.sensor_loss_number[3] = 0
+            self.sensor_success_number[3] = 0
+
         if self.communication_reward_log[1] or self.sensor_communication_reward_log[1]:
             communication_slice_1 = \
                 (sum(self.communication_reward_log[1]) + sum(self.sensor_communication_reward_log[1])) / \
@@ -190,18 +210,18 @@ class Router:
         state[1][0] = calculate_slice_1
         state[1][1] = calculate_slice_2
         state[1][2] = calculate_slice_3
-        if sensor_slice_1 is None or sensor_slice_1 is False:
-            state[2][0] = 1
+        if sensor_slice_1 is None:
+            state[2][0] = -1
         else:
-            state[2][0] = 0
-        if sensor_slice_2 is None or sensor_slice_2 is False:
-            state[2][1] = 1
+            state[2][0] = sensor_slice_1
+        if sensor_slice_2 is None:
+            state[2][1] = -1
         else:
-            state[2][1] = 0
-        if sensor_slice_3 is None or sensor_slice_3 is False:
-            state[2][2] = 1
+            state[2][1] = sensor_slice_2
+        if sensor_slice_3 is None:
+            state[2][2] = -1
         else:
-            state[2][2] = 0
+            state[2][2] = sensor_slice_3
         """如果智能体第一次运行则不向回放缓存中存储信息，只更新当前状态，动作和应用这次动作"""
         if is_dqn:
             if self.state[0][0] == -2:
@@ -361,7 +381,7 @@ class Router:
                     task.current_router = self.sign  # 更新数据包所在路由器编号的信息
                     self.sensor_load_slice[task.slice_sign] += task.storage_required
                 else:
-                    self.sensor_loss_number += 1
+                    self.sensor_loss_number[task.slice_sign] += 1
                     """为计算奖励值做准备"""
                     if task.specific_type == 1:
                         self.sensor_reward_log[task.slice_sign] = True
@@ -382,7 +402,7 @@ class Router:
                 dataset.current_router = self.sign  # 更新数据包所在路由器编号的信息
                 self.sensor_load_slice[dataset.slice_sign] += dataset.storage_required
             else:
-                self.sensor_loss_number += 1
+                self.sensor_loss_number[dataset.slice_sign] += 1
                 """为计算奖励值做准备"""
                 if dataset.specific_type == 1:
                     self.sensor_reward_log[dataset.slice_sign] = True
@@ -419,7 +439,7 @@ class Router:
             else:
                 """否则销毁该数据，并且记做该数据成功完成任务，存入数据库"""
                 self.sensor_load_slice[data.slice_sign] -= data.storage_required
-                self.sensor_success_number += 1
+                self.sensor_success_number[data.slice_sign] += 1
                 """代表数据包一路上经过的路由器序号"""
                 index = 0
                 """将时延信息存入数据库"""
