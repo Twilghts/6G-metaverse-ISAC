@@ -112,7 +112,7 @@ if __name__ == '__main__':
             router.agent.build_dataset()
         for router in net.core_routers.values():
             router.agent.replay()
-        for i in range(60):
+        for i in range(75):
             for j in range(300):
                 task = task_set.pop()
                 if isinstance(task, communicationtask.CommunicationTask):
