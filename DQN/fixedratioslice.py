@@ -39,7 +39,7 @@ if __name__ == '__main__':
     _cursor_pool[0].execute("SELECT value FROM keyvalues_comparison where key = 'dataid'")
     data_id = _cursor_pool[0].fetchone()[0]
     start_time = time.perf_counter()
-    net = Net()
+    net = Net(is_training=False)
     net.initialize()
     paths = net.chose_paths()
     task_set, task_id, data_id = build_task_set(200, paths, _task_id=task_id, _data_id=data_id)

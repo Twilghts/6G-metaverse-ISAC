@@ -42,7 +42,9 @@ def registration_db(sql, values, conn):
 
 
 class Router:
-    def __init__(self, sign: int, storage: int = 15000, computing_power: int = 100, bandwidth: int = 500):
+    def __init__(self, sign: int, storage: int = 15000, computing_power: int = 100,
+                 bandwidth: int = 500, is_train: bool = False):
+        self.is_train = is_train
         self.communication_values = []
         self.calculate_values = []
         self.sensor_values = []
@@ -279,19 +281,20 @@ class Router:
             data.delay = 0
             """对已到达终点的数据包进行特殊处理"""
             if data.path[-1] == self.sign:
-                """代表数据包一路上经过的路由器序号"""
-                index = 0
-                """将时延信息存入数据包"""
-                for item_delay in data.delay_every_step:
-                    value = (data.sign, datetime.now(tz=timezone.utc), data.path[index],
-                             item_delay, data.slice_sign, False)
-                    values.append(value)
-                    index += 1
-                """数据包成功传输，成功运输的数据包数量加1"""
                 self.communication_successful_data += 1
+                if not self.is_train:
+                    """代表数据包一路上经过的路由器序号"""
+                    index = 0
+                    """将时延信息存入数据包"""
+                    for item_delay in data.delay_every_step:
+                        value = (data.sign, datetime.now(tz=timezone.utc), data.path[index],
+                                 item_delay, data.slice_sign, False)
+                        values.append(value)
+                        index += 1
+                    """数据包成功传输，成功运输的数据包数量加1"""
+                    self.communication_values.extend(values)
+                    values.clear()
                 del data
-                self.communication_values.extend(values)
-                values.clear()
             else:
                 data_list.append(data)
         """有数据传数据，没数据传None"""
@@ -313,17 +316,18 @@ class Router:
                 """将数据包添加到通信队列"""
                 self.cache_queue_communication.append(data_list)
             else:
-                """代表数据包一路上经过的路由器序号"""
-                index = 0
-                """将时延信息存入数据包"""  # 执行插入数据的SQL语句
-                for item_delay in data_list.delay_every_step:
-                    value = (data_list.sign, datetime.now(tz=timezone.utc),
-                             data_list.path[index], item_delay, data_list.slice_sign, True)
-                    values.append(value)
-                    index += 1
-                self.communication_values.extend(values)
                 """负载容量不够，数据包丢失，统计数据"""
                 self.communication_loss_data += 1
+                if not self.is_train:
+                    """代表数据包一路上经过的路由器序号"""
+                    index = 0
+                    """将时延信息存入数据包"""  # 执行插入数据的SQL语句
+                    for item_delay in data_list.delay_every_step:
+                        value = (data_list.sign, datetime.now(tz=timezone.utc),
+                                 data_list.path[index], item_delay, data_list.slice_sign, True)
+                        values.append(value)
+                        index += 1
+                    self.communication_values.extend(values)
                 del data_list
         else:
             for data in data_list:
@@ -336,18 +340,19 @@ class Router:
                     """将数据包添加到通信队列"""
                     self.cache_queue_communication.append(data)
                 else:
-                    """代表数据包一路上经过的路由器序号"""
-                    index = 0
-                    """将时延信息存入数据包"""
-                    for item_delay in data.delay_every_step:
-                        value = (data.sign, datetime.now(tz=timezone.utc),
-                                 data.path[index], item_delay, data.slice_sign, True)
-                        values.append(value)
-                        index += 1
                     """负载容量不够，数据包丢失，统计数据"""
                     self.communication_loss_data += 1
-                    self.communication_values.extend(values)
-                    values.clear()
+                    if not self.is_train:
+                        """代表数据包一路上经过的路由器序号"""
+                        index = 0
+                        """将时延信息存入数据包"""
+                        for item_delay in data.delay_every_step:
+                            value = (data.sign, datetime.now(tz=timezone.utc),
+                                     data.path[index], item_delay, data.slice_sign, True)
+                            values.append(value)
+                            index += 1
+                        self.communication_values.extend(values)
+                        values.clear()
                     del data
 
     def deal_calculate_task(self):
@@ -358,8 +363,9 @@ class Router:
             waiting_time += data.calculate_required / (self.distribution[2][data.slice_sign] * self.computing_power)
             """为计算奖励值做准备"""
             self.calculate_reward_log[data.slice_sign].append(waiting_time)
-            value = (data.sign, datetime.now(tz=timezone.utc), self.sign, waiting_time, data.slice_sign)
-            values.append(value)
+            if not self.is_train:
+                value = (data.sign, datetime.now(tz=timezone.utc), self.sign, waiting_time, data.slice_sign)
+                values.append(value)
             del data
         if values:
             self.calculate_values.extend(values)
@@ -382,16 +388,18 @@ class Router:
                     self.sensor_load_slice[task.slice_sign] += task.storage_required
                 else:
                     self.sensor_loss_number[task.slice_sign] += 1
-                    """代表数据包一路上经过的路由器序号"""
-                    index = 0
-                    """将时延信息存入数据库"""
-                    for item_delay in task.delay_every_step:
-                        value = (task.sign, datetime.now(tz=timezone.utc), task.path[index],
-                                 task.slice_sign, True, item_delay, task.specific_type)
-                        values.append(value)
-                        index += 1
+                    if not self.is_train:
+                        """代表数据包一路上经过的路由器序号"""
+                        index = 0
+                        """将时延信息存入数据库"""
+                        for item_delay in task.delay_every_step:
+                            value = (task.sign, datetime.now(tz=timezone.utc), task.path[index],
+                                     task.slice_sign, True, item_delay, task.specific_type)
+                            values.append(value)
+                            index += 1
                     del task
-            self.sensor_values.extend(values)
+            if not self.is_train:
+                self.sensor_values.extend(values)
         else:
             if dataset.storage_required + self.sensor_load_slice[dataset.slice_sign] <= \
                     (self.distribution[3][dataset.slice_sign] * self.storage):
@@ -401,13 +409,14 @@ class Router:
             else:
                 self.sensor_loss_number[dataset.slice_sign] += 1
                 """为计算奖励值做准备"""
-                """代表数据包一路上经过的路由器序号"""
-                index = 0
-                """将时延信息存入数据库"""
-                for item_delay in dataset.delay_every_step:
-                    self.sensor_values.append((dataset.sign, datetime.now(tz=timezone.utc), dataset.path[index],
-                                               dataset.slice_sign, True, item_delay, dataset.specific_type))
-                    index += 1
+                if not self.is_train:
+                    """代表数据包一路上经过的路由器序号"""
+                    index = 0
+                    """将时延信息存入数据库"""
+                    for item_delay in dataset.delay_every_step:
+                        self.sensor_values.append((dataset.sign, datetime.now(tz=timezone.utc), dataset.path[index],
+                                                   dataset.slice_sign, True, item_delay, dataset.specific_type))
+                        index += 1
                 del dataset
 
     def deal_sensor_data(self) -> Union[None, List[SensorData]]:
@@ -435,17 +444,18 @@ class Router:
                 """否则销毁该数据，并且记做该数据成功完成任务，存入数据库"""
                 self.sensor_load_slice[data.slice_sign] -= data.storage_required
                 self.sensor_success_number[data.slice_sign] += 1
-                """代表数据包一路上经过的路由器序号"""
-                index = 0
-                """将时延信息存入数据库"""
-                for item_delay in data.delay_every_step:
-                    value = (data.sign, datetime.now(tz=timezone.utc), data.path[index],
-                             data.slice_sign, False, item_delay, data.specific_type)
-                    values.append(value)
-                    index += 1
+                if not self.is_train:
+                    """代表数据包一路上经过的路由器序号"""
+                    index = 0
+                    """将时延信息存入数据库"""
+                    for item_delay in data.delay_every_step:
+                        value = (data.sign, datetime.now(tz=timezone.utc), data.path[index],
+                                 data.slice_sign, False, item_delay, data.specific_type)
+                        values.append(value)
+                        index += 1
                 del data
         self.sensor_queue.extend(temporary_list)
-        if values:
+        if values and not self.is_train:
             self.sensor_values.extend(values)
         if passing_dataset:
             return passing_dataset

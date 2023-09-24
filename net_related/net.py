@@ -17,7 +17,7 @@ fig.dpi = _dpi_value
 
 
 class Net:
-    def __init__(self):
+    def __init__(self, is_training=False):
         self.core_graph: nx.Graph = nx.read_graphml("../resource/graph.graphml")
         """读取出来的图的节点是字符串类型的，离谱！要更改节点的名字"""
         relabel_table: dict = {
@@ -35,7 +35,7 @@ class Net:
         """路由器组 为字典，键为路由器的编号，值为所对应的路由器,设置路由器内部可存储的数据容量。"""
         self.core_routers: Dict[int, Router] = {
             number: Router(number, storage=self.router_storage[number], computing_power=self.router_calculate[number],
-                           bandwidth=self.router_bandwidth[number]) for number in range(0, 16)
+                           bandwidth=self.router_bandwidth[number], is_train=is_training) for number in range(0, 16)
         }
         """为按照概率分配做准备"""
         self.calculate_slice_1 = []

@@ -71,12 +71,12 @@ if __name__ == '__main__':
     task_id = 0
     data_id = 0
     start_time = time.perf_counter()
-    net = Net()
+    net = Net(is_training=True)
     net.initialize()
     paths = net.chose_paths()
     task_set, task_id, data_id = build_task_set(400, paths, _task_id=task_id, _data_id=data_id)
     """准备数据"""
-    for i in range(120):
+    for i in range(200):
         for j in range(300):
             task = task_set.pop()
             if isinstance(task, communicationtask.CommunicationTask):
@@ -143,6 +143,6 @@ if __name__ == '__main__':
         print(time.perf_counter() - start_time)
     """全部结束后的统一信息存储"""
     for router in net.core_routers.values():
-        filename = "model_88_" + str(router.sign)
+        filename = "model_89_" + str(router.sign)
         router.agent.target_model.save(f"../resource/{filename}")
     print(time.perf_counter() - start_time)

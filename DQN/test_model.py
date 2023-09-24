@@ -38,9 +38,9 @@ if __name__ == '__main__':
     _cursor_pool[0].execute("SELECT value FROM keyvalues where key = 'dataid'")
     data_id = _cursor_pool[0].fetchone()[0]
     start_time = time.perf_counter()
-    test_net = Net()
+    test_net = Net(is_training=False)
     for router in test_net.core_routers.values():
-        filename = "model_88_" + str(router.sign)
+        filename = "model_89_" + str(router.sign)
         router.agent.target_model = tf.keras.models.load_model(f"../resource/{filename}")
     test_net.initialize()
     paths = test_net.chose_paths()
