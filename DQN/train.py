@@ -74,10 +74,10 @@ if __name__ == '__main__':
     net = Net()
     net.initialize()
     paths = net.chose_paths()
-    task_set, task_id, data_id = build_task_set(200, paths, _task_id=task_id, _data_id=data_id)
+    task_set, task_id, data_id = build_task_set(400, paths, _task_id=task_id, _data_id=data_id)
     """准备数据"""
-    for i in range(170):
-        for j in range(50):
+    for i in range(120):
+        for j in range(300):
             task = task_set.pop()
             if isinstance(task, communicationtask.CommunicationTask):
                 net.core_routers[task.path[0]].put_task(task)
@@ -90,7 +90,7 @@ if __name__ == '__main__':
                 random_index = choose_router_index_by_calculate_weight(_net=net, _task=task)
                 net.core_routers[random_index].put_task(task)
                 # random.choice(list(net.core_routers.values())).put_task(task)
-            if j == 25:
+            if j % 25 == 0:
                 net.deal_data()
         for router in net.core_routers.values():
             router.markov()
@@ -101,7 +101,7 @@ if __name__ == '__main__':
         net.deal_data()
         """选择通信链路的任务路径"""
         paths = net.chose_paths()
-        tem_set, task_id, data_id = build_task_set(50, paths, _task_id=task_id, _data_id=data_id)
+        tem_set, task_id, data_id = build_task_set(300, paths, _task_id=task_id, _data_id=data_id)
         task_set |= tem_set
         del tem_set
 
@@ -112,8 +112,8 @@ if __name__ == '__main__':
             router.agent.build_dataset()
         for router in net.core_routers.values():
             router.agent.replay()
-        for i in range(75):
-            for j in range(50):
+        for i in range(60):
+            for j in range(300):
                 task = task_set.pop()
                 if isinstance(task, communicationtask.CommunicationTask):
                     net.core_routers[task.path[0]].put_task(task)
@@ -126,7 +126,7 @@ if __name__ == '__main__':
                     random_index = choose_router_index_by_calculate_weight(_net=net, _task=task)
                     net.core_routers[random_index].put_task(task)
                     # random.choice(list(net.core_routers.values())).put_task(task)
-                if j == 25:
+                if j % 25 == 0:
                     net.deal_data()
             for router in net.core_routers.values():
                 router.markov()
@@ -137,7 +137,7 @@ if __name__ == '__main__':
             net.deal_data()
             """选择通信链路的任务路径"""
             paths = net.chose_paths()
-            tem_set, task_id, data_id = build_task_set(50, paths, _task_id=task_id, _data_id=data_id)
+            tem_set, task_id, data_id = build_task_set(300, paths, _task_id=task_id, _data_id=data_id)
             task_set |= tem_set
             del tem_set
         print(time.perf_counter() - start_time)
