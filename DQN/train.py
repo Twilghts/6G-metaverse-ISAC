@@ -112,7 +112,7 @@ if __name__ == '__main__':
             router.agent.build_dataset()
         for router in net.core_routers.values():
             router.agent.replay()
-        for i in range(75):
+        for i in range(60):
             for j in range(300):
                 task = task_set.pop()
                 if isinstance(task, communicationtask.CommunicationTask):
@@ -143,6 +143,6 @@ if __name__ == '__main__':
         print(time.perf_counter() - start_time)
     """全部结束后的统一信息存储"""
     for router in net.core_routers.values():
-        filename = "model_89_" + str(router.sign)
+        filename = "model_90_" + str(router.sign)
         router.agent.target_model.save(f"../resource/{filename}")
     print(time.perf_counter() - start_time)

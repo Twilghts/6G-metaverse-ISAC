@@ -24,9 +24,9 @@ class Net:
             number: int(number) for number in self.core_graph.nodes
         }
         self.core_graph: nx.Graph = nx.relabel_nodes(self.core_graph, relabel_table)
-        self.router_storage = [740, 462, 534, 745, 653, 754, 1029, 284, 582, 841, 1056, 157, 628, 840, 938, 787]
+        self.router_storage = [740, 1462, 534, 745, 653, 754, 1029, 1284, 582, 841, 1056, 1578, 628, 840, 938, 787]
         self.router_storage.sort(reverse=True)
-        self.router_calculate = [420, 293, 363, 297, 423, 396, 368, 489, 388, 421, 428, 316, 341, 282, 382, 451]
+        self.router_calculate = [420, 593, 363, 497, 423, 396, 368, 489, 388, 421, 428, 316, 341, 682, 482, 451]
         """用作为计算类任务根据路由器计算资源随机选择路由器"""
         self.total_calculate_weight = sum(self.router_calculate)
         self.router_calculate.sort()
@@ -156,9 +156,9 @@ class Net:
             router.distribution[2][2] = 0.6
             router.distribution[2][3] = 0.2
             # 针对路由器存储资源的初始化，切片三是主要处理存储业务的
-            router.distribution[3][1] = 0.15
-            router.distribution[3][2] = 0.15
-            router.distribution[3][3] = 0.7
+            router.distribution[3][1] = 0.1
+            router.distribution[3][2] = 0.1
+            router.distribution[3][3] = 0.8
             # 针对路由器带宽资源传感部分的初始化，切片四是主要处理通信的传感部分业务的
             router.distribution[4][1] = 0.625 * (10 / 18)
             router.distribution[4][2] = 0.1475 * (10 / 18)

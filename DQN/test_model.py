@@ -40,7 +40,7 @@ if __name__ == '__main__':
     start_time = time.perf_counter()
     test_net = Net(is_training=False)
     for router in test_net.core_routers.values():
-        filename = "model_89_" + str(router.sign)
+        filename = "model_90_" + str(router.sign)
         router.agent.target_model = tf.keras.models.load_model(f"../resource/{filename}")
     test_net.initialize()
     paths = test_net.chose_paths()
@@ -71,7 +71,7 @@ if __name__ == '__main__':
         test_net.deal_data()
         """选择通信链路的任务路径"""
         paths = test_net.chose_paths()
-        tem_set, task_id, data_id = build_task_set(50, paths, _task_id=task_id, _data_id=data_id)
+        tem_set, task_id, data_id = build_task_set(300, paths, _task_id=task_id, _data_id=data_id)
         test_task_set |= tem_set
         del tem_set
         print(time.perf_counter() - start_time)
