@@ -143,6 +143,6 @@ if __name__ == '__main__':
         print(time.perf_counter() - start_time)
     """全部结束后的统一信息存储"""
     for router in net.core_routers.values():
-        filename = "model_91_" + str(router.sign)
+        filename = "model_92_" + str(router.sign)
         router.agent.target_model.save(f"../resource/{filename}")
     print(time.perf_counter() - start_time)
