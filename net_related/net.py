@@ -152,13 +152,13 @@ class Net:
             router.distribution[1][2] = 0.1475 * (8 / 18)
             router.distribution[1][3] = 0.1475 * (8 / 18)
             # 针对路由器计算资源的初始化，切片二是主要处理计算业务的
-            router.distribution[2][1] = 0.1
-            router.distribution[2][2] = 0.8
-            router.distribution[2][3] = 0.1
+            router.distribution[2][1] = 0.08
+            router.distribution[2][2] = 0.84
+            router.distribution[2][3] = 0.08
             # 针对路由器存储资源的初始化，切片三是主要处理存储业务的
-            router.distribution[3][1] = 0.05
-            router.distribution[3][2] = 0.05
-            router.distribution[3][3] = 0.9
+            router.distribution[3][1] = 0.03
+            router.distribution[3][2] = 0.03
+            router.distribution[3][3] = 0.94
             # 针对路由器带宽资源传感部分的初始化，切片四是主要处理通信的传感部分业务的
             router.distribution[4][1] = 0.625 * (10 / 18)
             router.distribution[4][2] = 0.1475 * (10 / 18)
