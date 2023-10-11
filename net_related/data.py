@@ -5,11 +5,12 @@ from typing import List, Union
 
 class Data(ABC):
     @abstractmethod
-    def __init__(self, slice_sign: int, dataid: int):
+    def __init__(self, slice_sign: int, dataid: int, task_id: int):
         self.sign = dataid
         self.slice_sign = slice_sign
         self.type = None
         self.current_router: int = -1
+        self.task_id = task_id
 
     @abstractmethod
     def __repr__(self):
@@ -21,8 +22,9 @@ class Data(ABC):
 
 
 class CommunicationData(Data):
-    def __init__(self, slice_sign: int, dataid: int, bandwidth_required: int = 1, path: Union[List[int], None] = None):
-        super().__init__(slice_sign, dataid)
+    def __init__(self, slice_sign: int, dataid: int, task_id: int, bandwidth_required: int = 1,
+                 path: Union[List[int], None] = None):
+        super().__init__(slice_sign=slice_sign, dataid=dataid, task_id=task_id)
         self.type = "CommunicationData"
         self.path: Union[List[int], None] = path
         self.bandwidth_required: int = bandwidth_required
@@ -37,8 +39,8 @@ class CommunicationData(Data):
 
 
 class CalculateData(Data):
-    def __init__(self, slice_sign: int, dataid: int, calculate_required: int = 1):
-        super().__init__(slice_sign, dataid)
+    def __init__(self, slice_sign: int, dataid: int, task_id: int, calculate_required: int = 1):
+        super().__init__(slice_sign=slice_sign, dataid=dataid, task_id=task_id)
         self.type = "CalculateData"
         self.calculate_required: int = calculate_required
         self.delay: int = 0
@@ -51,8 +53,9 @@ class CalculateData(Data):
 
 
 class SensorData(Data):
-    def __init__(self, slice_sign: int, dataid: int, specific_type: int, path, storage_required: int = 1, count=3):
-        super().__init__(slice_sign=slice_sign, dataid=dataid)
+    def __init__(self, slice_sign: int, dataid: int, task_id: int, specific_type: int, path, storage_required: int = 1,
+                 count=3):
+        super().__init__(slice_sign=slice_sign, dataid=dataid, task_id=task_id)
         self.type = "SensorData"
         self.storage_required: int = storage_required
         self.count = count
@@ -76,11 +79,12 @@ class TypeOfData(Enum):
 
 class DataFactory:
     @staticmethod
-    def create_data(task_type: TypeOfData, slice_sign: int,
+    def create_data(task_type: TypeOfData, slice_sign: int, task_id: int,
                     dataid: int, path: Union[List[int], None] = None, specific_type=None) -> Data:
         if task_type == TypeOfData.communication_data:
-            return CommunicationData(slice_sign=slice_sign, dataid=dataid, path=path)
+            return CommunicationData(slice_sign=slice_sign, dataid=dataid, path=path, task_id=task_id)
         elif task_type == TypeOfData.calculate_data:
-            return CalculateData(slice_sign=slice_sign, dataid=dataid)
+            return CalculateData(slice_sign=slice_sign, dataid=dataid, task_id=task_id)
         elif task_type == TypeOfData.sensor_data:
-            return SensorData(slice_sign=slice_sign, dataid=dataid, specific_type=specific_type, path=path)
+            return SensorData(slice_sign=slice_sign, dataid=dataid, specific_type=specific_type, path=path,
+                              task_id=task_id)

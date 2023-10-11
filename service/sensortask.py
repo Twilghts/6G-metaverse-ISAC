@@ -17,7 +17,7 @@ class SensorTask(Task):
         self.specific_type = specific_type
         for _ in range(self.sensor_required):
             data = DataFactory.create_data(TypeOfData.sensor_data, slice_sign=slice_sign,
-                                           dataid=self.data_id, specific_type=specific_type, path=path)
+                                           dataid=self.data_id, specific_type=specific_type, path=path, task_id=task_id)
             """向self.dataset中添加数据包，为转发做准备"""
             self.dataset.append(data)
             """数据包序号递增"""

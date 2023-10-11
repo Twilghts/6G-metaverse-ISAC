@@ -14,7 +14,8 @@ class CalculateTask(Task):
         self.task_id += 1
         self.data_id = data_id
         for _ in range(self.calculate_required):
-            data = DataFactory.create_data(TypeOfData.calculate_data, slice_sign=slice_sign, dataid=self.data_id)
+            data = DataFactory.create_data(TypeOfData.calculate_data, slice_sign=slice_sign, dataid=self.data_id,
+                                           task_id=task_id)
             """向self.dataset中添加数据包，为转发做准备"""
             self.dataset.append(data)
             """数据包序号递增"""

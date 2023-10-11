@@ -1,12 +1,10 @@
 import copy
-import random
 from collections import deque
 from collections.abc import Iterable
 from datetime import datetime, timezone
 from typing import List, Union, Dict
 
 import numpy as np
-import psycopg2
 
 import calculatetask
 import communicationtask
@@ -15,30 +13,6 @@ import sensortask
 from DQN.agent import DQN
 from data import CommunicationData, CalculateData, SensorData
 from task import Task
-
-# 连接到PostgresSQL数据库
-conn_with_router = psycopg2.connect(
-    host="localhost",
-    port="5432",
-    database="postgres",
-    user="postgres",
-    password="rkw2536153"
-)
-cursor_pool = []
-# 执行插入数据的SQL语句
-sql_communication = 'INSERT INTO "communicationdatadb"(id, timestamp,  router_sign, delay, slice_sign, is_loss )' \
-                    'VALUES (%s, %s, %s, %s, %s, %s)'
-
-sql_calculate = 'INSERT INTO "calculatedatadb" (id, time, router_id, delay, slice_sign)  ' \
-                'VALUES (%s, %s, %s, %s, %s)'
-
-sql_sensor = 'INSERT INTO "sensordatadb" (id, time, router_id, slice_id, is_loss)  ' \
-             'VALUES (%s, %s, %s, %s, %s)'
-
-
-def registration_db(sql, values, conn):
-    random.choice(cursor_pool).executemany(sql, values)
-    conn.commit()
 
 
 class Router:
@@ -288,7 +262,7 @@ class Router:
                     """将时延信息存入数据包"""
                     for item_delay in data.delay_every_step:
                         value = (data.sign, datetime.now(tz=timezone.utc), data.path[index],
-                                 item_delay, data.slice_sign, False)
+                                 item_delay, data.slice_sign, False, data.task_id)
                         values.append(value)
                         index += 1
                     """数据包成功传输，成功运输的数据包数量加1"""
@@ -324,7 +298,7 @@ class Router:
                     """将时延信息存入数据包"""  # 执行插入数据的SQL语句
                     for item_delay in data_list.delay_every_step:
                         value = (data_list.sign, datetime.now(tz=timezone.utc),
-                                 data_list.path[index], item_delay, data_list.slice_sign, True)
+                                 data_list.path[index], item_delay, data_list.slice_sign, True, data_list.task_id)
                         values.append(value)
                         index += 1
                     self.communication_values.extend(values)
@@ -348,7 +322,7 @@ class Router:
                         """将时延信息存入数据包"""
                         for item_delay in data.delay_every_step:
                             value = (data.sign, datetime.now(tz=timezone.utc),
-                                     data.path[index], item_delay, data.slice_sign, True)
+                                     data.path[index], item_delay, data.slice_sign, True, data.task_id)
                             values.append(value)
                             index += 1
                         self.communication_values.extend(values)
@@ -364,7 +338,8 @@ class Router:
             """为计算奖励值做准备"""
             self.calculate_reward_log[data.slice_sign].append(waiting_time)
             if not self.is_train:
-                value = (data.sign, datetime.now(tz=timezone.utc), self.sign, waiting_time, data.slice_sign)
+                value = (data.sign, datetime.now(tz=timezone.utc), self.sign,
+                         waiting_time, data.slice_sign, data.task_id)
                 values.append(value)
             del data
         if values:
@@ -394,7 +369,7 @@ class Router:
                         """将时延信息存入数据库"""
                         for item_delay in task.delay_every_step:
                             value = (task.sign, datetime.now(tz=timezone.utc), task.path[index],
-                                     task.slice_sign, True, item_delay, task.specific_type)
+                                     task.slice_sign, True, item_delay, task.specific_type, task.task_id)
                             values.append(value)
                             index += 1
                     del task
@@ -414,8 +389,9 @@ class Router:
                     index = 0
                     """将时延信息存入数据库"""
                     for item_delay in dataset.delay_every_step:
-                        self.sensor_values.append((dataset.sign, datetime.now(tz=timezone.utc), dataset.path[index],
-                                                   dataset.slice_sign, True, item_delay, dataset.specific_type))
+                        self.sensor_values.append((dataset.sign, datetime.now(tz=timezone.utc),
+                                                   dataset.path[index], dataset.slice_sign,
+                                                   True, item_delay, dataset.specific_type, dataset.task_id))
                         index += 1
                 del dataset
 
@@ -450,7 +426,7 @@ class Router:
                     """将时延信息存入数据库"""
                     for item_delay in data.delay_every_step:
                         value = (data.sign, datetime.now(tz=timezone.utc), data.path[index],
-                                 data.slice_sign, False, item_delay, data.specific_type)
+                                 data.slice_sign, False, item_delay, data.specific_type, data.task_id)
                         values.append(value)
                         index += 1
                 del data
