@@ -148,67 +148,67 @@ class Net:
     def initialize(self):
         for router in self.core_routers.values():
             # 针对路由器带宽资源的初始化，切片一是主要处理通信业务的
-            router.distribution[1][1] = 0.86 * (8 / 18)
-            router.distribution[1][2] = 0.07 * (8 / 18)
-            router.distribution[1][3] = 0.07 * (8 / 18)
+            router.distribution[1][1] = 0.9 * (8 / 18)
+            router.distribution[1][2] = 0.05 * (8 / 18)
+            router.distribution[1][3] = 0.05 * (8 / 18)
             # 针对路由器计算资源的初始化，切片二是主要处理计算业务的
-            router.distribution[2][1] = 0.08
-            router.distribution[2][2] = 0.84
-            router.distribution[2][3] = 0.08
+            router.distribution[2][1] = 0.06
+            router.distribution[2][2] = 0.88
+            router.distribution[2][3] = 0.06
             # 针对路由器存储资源的初始化，切片三是主要处理存储业务的
             router.distribution[3][1] = 0.03
             router.distribution[3][2] = 0.03
             router.distribution[3][3] = 0.94
             # 针对路由器带宽资源传感部分的初始化，切片四是主要处理通信的传感部分业务的
-            router.distribution[4][1] = 0.86 * (10 / 18)
-            router.distribution[4][2] = 0.07 * (10 / 18)
-            router.distribution[4][3] = 0.07 * (10 / 18)
+            router.distribution[4][1] = 0.9 * (10 / 18)
+            router.distribution[4][2] = 0.05 * (10 / 18)
+            router.distribution[4][3] = 0.05 * (10 / 18)
 
         for link in self.links.values():
             # 针对链路带宽资源的初始化，切片一是主要处理通信业务的
-            link.communication_distribution[1][1] = 0.86 * (8 / 18)
-            link.communication_distribution[1][2] = 0.07 * (8 / 18)
-            link.communication_distribution[1][3] = 0.07 * (8 / 18)
+            link.communication_distribution[1][1] = 0.9 * (8 / 18)
+            link.communication_distribution[1][2] = 0.05 * (8 / 18)
+            link.communication_distribution[1][3] = 0.05 * (8 / 18)
             # 针对链路带宽资源的传感部分的初始化，切片一是主要处理通信业务的
-            link.communication_distribution[2][1] = 0.86 * (10 / 18)
-            link.communication_distribution[2][2] = 0.07 * (10 / 18)
-            link.communication_distribution[2][3] = 0.07 * (10 / 18)
+            link.communication_distribution[2][1] = 0.9 * (10 / 18)
+            link.communication_distribution[2][2] = 0.05 * (10 / 18)
+            link.communication_distribution[2][3] = 0.05 * (10 / 18)
 
         for router in self.edge_routers_first.values():
             # 针对路由器带宽资源的初始化，切片一是主要处理通信业务的
-            router.distribution[1][1] = 0.86 * (8 / 18)
-            router.distribution[1][2] = 0.07 * (8 / 18)
-            router.distribution[1][3] = 0.07 * (8 / 18)
+            router.distribution[1][1] = 0.9 * (8 / 18)
+            router.distribution[1][2] = 0.05 * (8 / 18)
+            router.distribution[1][3] = 0.05 * (8 / 18)
             # 针对路由器计算资源的初始化，切片二是主要处理计算业务的
-            router.distribution[2][1] = 0.1
-            router.distribution[2][2] = 0.8
-            router.distribution[2][3] = 0.1
+            router.distribution[2][1] = 0.06
+            router.distribution[2][2] = 0.88
+            router.distribution[2][3] = 0.06
             # 针对路由器存储资源的初始化，切片三是主要处理存储业务的
-            router.distribution[3][1] = 0.05
-            router.distribution[3][2] = 0.05
-            router.distribution[3][3] = 0.9
+            router.distribution[3][1] = 0.03
+            router.distribution[3][2] = 0.03
+            router.distribution[3][3] = 0.94
             # 针对路由器带宽资源传感部分的初始化，切片四是主要处理通信的传感部分业务的
-            router.distribution[4][1] = 0.86 * (10 / 18)
-            router.distribution[4][2] = 0.07 * (10 / 18)
-            router.distribution[4][3] = 0.07 * (10 / 18)
+            router.distribution[4][1] = 0.9 * (10 / 18)
+            router.distribution[4][2] = 0.05 * (10 / 18)
+            router.distribution[4][3] = 0.05 * (10 / 18)
 
         for router in self.edge_routers_second.values():
             # 针对路由器带宽资源的初始化，切片一是主要处理通信业务的
-            router.distribution[1][1] = 0.86 * (8 / 18)
-            router.distribution[1][2] = 0.07 * (8 / 18)
-            router.distribution[1][3] = 0.07 * (8 / 18)
+            router.distribution[1][1] = 0.9 * (8 / 18)
+            router.distribution[1][2] = 0.05 * (8 / 18)
+            router.distribution[1][3] = 0.05 * (8 / 18)
             # 针对路由器计算资源的初始化，切片二是主要处理计算业务的
-            router.distribution[2][1] = 0.1
-            router.distribution[2][2] = 0.8
-            router.distribution[2][3] = 0.1
+            router.distribution[2][1] = 0.06
+            router.distribution[2][2] = 0.88
+            router.distribution[2][3] = 0.06
             # 针对路由器存储资源的初始化，切片三是主要处理存储业务的
-            router.distribution[3][1] = 0.05
-            router.distribution[3][2] = 0.05
-            router.distribution[3][3] = 0.9
+            router.distribution[3][1] = 0.03
+            router.distribution[3][2] = 0.03
+            router.distribution[3][3] = 0.94
             # 针对路由器带宽资源传感部分的初始化，切片四是主要处理通信的传感部分业务的
-            router.distribution[4][1] = 0.86 * (10 / 18)
-            router.distribution[4][2] = 0.07 * (10 / 18)
-            router.distribution[4][3] = 0.07 * (10 / 18)
+            router.distribution[4][1] = 0.9 * (10 / 18)
+            router.distribution[4][2] = 0.05 * (10 / 18)
+            router.distribution[4][3] = 0.05 * (10 / 18)
         """为按照概率分配做准备"""
         self.calculate_slice_1 = [router.computing_power * router.distribution[2][1] for router in
                                   self.core_routers.values()]
