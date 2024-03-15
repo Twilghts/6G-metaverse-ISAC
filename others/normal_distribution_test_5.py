@@ -7,10 +7,10 @@ std_dev = 1
 # 给定的 y 值
 y = 0.25
 
-# 使用 ppf 函数计算对应的 x 值
+# 使用 ppf 函数计算对应的 _t 值
 x = norm.ppf(y, loc=mean, scale=std_dev)
 
-print("x =", x)
+print("_t =", x)
 pdf_value = norm.pdf(x, loc=mean, scale=std_dev)
 
-print("PDF delay at x =", pdf_value)
+print("PDF delay at _t =", pdf_value)

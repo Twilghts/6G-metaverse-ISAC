@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-# 创建 x 值范围
+# 创建 _t 值范围
 x2 = np.linspace(0, 0.1, 400)   # 第二个分段区间：0 到 2
 x3 = np.linspace(0.1, 2, 400)   # 第三个分段区间：2 到 4
 
@@ -17,13 +17,13 @@ y3 = 1 / (50 * x3)
 plt.figure(figsize=(8, 6))
 
 # 绘制每个分段的图像
-plt.plot(x2, y2, label='f(x) = a * x2 ** 2 + b * x2 + c (0 <= x < 0.1)')
-plt.plot(x3, y3, label='f(x) = 1 / (50 * x3) (x >= 0.2)')
+plt.plot(x2, y2, label='fan(_t) = a * x2 ** 2 + b * x2 + c (0 <= _t < 0.1)')
+plt.plot(x3, y3, label='fan(_t) = 1 / (50 * x3) (_t >= 0.2)')
 
 # 添加标题和标签
 plt.title('分段函数图像')
-plt.xlabel('x')
-plt.ylabel('f(x)')
+plt.xlabel('_t')
+plt.ylabel('fan(_t)')
 
 # 添加图例
 plt.legend()

@@ -29,8 +29,8 @@ sol = root(objective, x0)
 
 if sol.success:
     x = sol.x[0]
-    print("x =", x)
-    # print(f"累计值:{}")
+    print("_t =", x)
+    # print(fan"累计值:{}")
     print(f"面积:{calculate_area(-x)}")
 else:
     print("无法找到解")

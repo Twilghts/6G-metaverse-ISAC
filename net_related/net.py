@@ -148,31 +148,31 @@ class Net:
     def initialize(self):
         for router in self.core_routers.values():
             # 针对路由器带宽资源的初始化，切片一是主要处理通信业务的
-            router.distribution[1][1] = 0.9 * (8 / 18)
-            router.distribution[1][2] = 0.05 * (8 / 18)
-            router.distribution[1][3] = 0.05 * (8 / 18)
+            router.distribution[1][1] = 0.9 * (8 / 18)  # 切片一的用于通信数据包的通信资源占总量的90% * (4/9)
+            router.distribution[1][2] = 0.05 * (8 / 18)  # 切片二的用于通信数据包的通信资源占总量的5% * (4/9)
+            router.distribution[1][3] = 0.05 * (8 / 18)  # 切片三的用于通信数据包的通信资源占总量的5% * (4/9)
             # 针对路由器计算资源的初始化，切片二是主要处理计算业务的
-            router.distribution[2][1] = 0.06
-            router.distribution[2][2] = 0.88
-            router.distribution[2][3] = 0.06
+            router.distribution[2][1] = 0.06  # 切片一的计算资源占总量的6%
+            router.distribution[2][2] = 0.88  # 切片二的计算资源占总量的88%
+            router.distribution[2][3] = 0.06  # 切片三的计算资源占总量的6%
             # 针对路由器存储资源的初始化，切片三是主要处理存储业务的
-            router.distribution[3][1] = 0.03
-            router.distribution[3][2] = 0.03
-            router.distribution[3][3] = 0.94
+            router.distribution[3][1] = 0.03  # 切片一的存储资源占总量的3%
+            router.distribution[3][2] = 0.03  # 切片二的存储资源占总量的3%
+            router.distribution[3][3] = 0.94  # 切片三的存储资源占总量的94%
             # 针对路由器带宽资源传感部分的初始化，切片四是主要处理通信的传感部分业务的
-            router.distribution[4][1] = 0.9 * (10 / 18)
-            router.distribution[4][2] = 0.05 * (10 / 18)
-            router.distribution[4][3] = 0.05 * (10 / 18)
+            router.distribution[4][1] = 0.9 * (10 / 18)  # 切片一的用于传感数据包的通信资源占总量的90% * (5/9)
+            router.distribution[4][2] = 0.05 * (10 / 18)  # 切片二的用于传感数据包的通信资源占总量的5% * (5/9)
+            router.distribution[4][3] = 0.05 * (10 / 18)  # 切片三的用于传感数据包的通信资源占总量的5% * (5/9)
 
         for link in self.links.values():
             # 针对链路带宽资源的初始化，切片一是主要处理通信业务的
-            link.communication_distribution[1][1] = 0.9 * (8 / 18)
-            link.communication_distribution[1][2] = 0.05 * (8 / 18)
-            link.communication_distribution[1][3] = 0.05 * (8 / 18)
+            link.communication_distribution[1][1] = 0.9 * (8 / 18)  # 切片一的用于通信数据包的通信资源占总量的90% * (4/9)(链路)
+            link.communication_distribution[1][2] = 0.05 * (8 / 18)  # 切片二的用于通信数据包的通信资源占总量的5% * (4/9)(链路)
+            link.communication_distribution[1][3] = 0.05 * (8 / 18)  # 切片三的用于通信数据包的通信资源占总量的5% * (4/9)(链路)
             # 针对链路带宽资源的传感部分的初始化，切片一是主要处理通信业务的
-            link.communication_distribution[2][1] = 0.9 * (10 / 18)
-            link.communication_distribution[2][2] = 0.05 * (10 / 18)
-            link.communication_distribution[2][3] = 0.05 * (10 / 18)
+            link.communication_distribution[2][1] = 0.9 * (10 / 18)  # 切片一的用于传感数据包的通信资源占总量的90% * (5/9)(链路)
+            link.communication_distribution[2][2] = 0.05 * (10 / 18)  # 切片二的用于传感数据包的通信资源占总量的5% * (5/9)(链路)
+            link.communication_distribution[2][3] = 0.05 * (10 / 18)  # 切片三的用于传感数据包的通信资源占总量的5% * (5/9)(链路)
 
         for router in self.edge_routers_first.values():
             # 针对路由器带宽资源的初始化，切片一是主要处理通信业务的
@@ -220,31 +220,31 @@ class Net:
     def initialize2(self):
         for router in self.core_routers.values():
             # 针对路由器带宽资源的初始化，切片一是主要处理通信业务的
-            router.distribution[1][1] = 0.92 * (8 / 18)
-            router.distribution[1][2] = 0.04 * (8 / 18)
-            router.distribution[1][3] = 0.04 * (8 / 18)
+            router.distribution[1][1] = 0.92 * (8 / 18)  # 切片一的用于通信数据包的通信资源占总量的92% * (4/9)
+            router.distribution[1][2] = 0.04 * (8 / 18)  # 切片二的用于通信数据包的通信资源占总量的4% * (4/9)
+            router.distribution[1][3] = 0.04 * (8 / 18)  # 切片三的用于通信数据包的通信资源占总量的4% * (4/9)
             # 针对路由器计算资源的初始化，切片二是主要处理计算业务的
-            router.distribution[2][1] = 0.04
-            router.distribution[2][2] = 0.92
-            router.distribution[2][3] = 0.04
+            router.distribution[2][1] = 0.04  # 切片一的计算资源占总量的4%
+            router.distribution[2][2] = 0.92  # 切片二的计算资源占总量的92%
+            router.distribution[2][3] = 0.04  # 切片三的计算资源占总量的4%
             # 针对路由器存储资源的初始化，切片三是主要处理存储业务的
-            router.distribution[3][1] = 0.4
-            router.distribution[3][2] = 0.4
-            router.distribution[3][3] = 0.2
+            router.distribution[3][1] = 0.4  # 切片一的存储资源占总量的40%
+            router.distribution[3][2] = 0.4  # 切片二的存储资源占总量的40%
+            router.distribution[3][3] = 0.2  # 切片三的存储资源占总量的20%
             # 针对路由器带宽资源传感部分的初始化，切片四是主要处理通信的传感部分业务的
-            router.distribution[4][1] = 0.92 * (10 / 18)
-            router.distribution[4][2] = 0.04 * (10 / 18)
-            router.distribution[4][3] = 0.04 * (10 / 18)
+            router.distribution[4][1] = 0.92 * (10 / 18)  # 切片一的用于传感数据包的通信资源占总量的4% * (5/9)
+            router.distribution[4][2] = 0.04 * (10 / 18)  # 切片二的用于传感数据包的通信资源占总量的4% * (5/9)
+            router.distribution[4][3] = 0.04 * (10 / 18)  # 切片三的用于传感数据包的通信资源占总量的4% * (5/9)
 
         for link in self.links.values():
             # 针对链路带宽资源的初始化，切片一是主要处理通信业务的
-            link.communication_distribution[1][1] = 0.92 * (8 / 18)
-            link.communication_distribution[1][2] = 0.04 * (8 / 18)
-            link.communication_distribution[1][3] = 0.04 * (8 / 18)
+            link.communication_distribution[1][1] = 0.92 * (8 / 18)  # 切片一的用于通信数据包的通信资源占总量的92% * (4/9)(链路)
+            link.communication_distribution[1][2] = 0.04 * (8 / 18)  # 切片二的用于通信数据包的通信资源占总量的4% * (4/9)(链路)
+            link.communication_distribution[1][3] = 0.04 * (8 / 18)  # 切片三的用于通信数据包的通信资源占总量的4% * (4/9)(链路)
             # 针对链路带宽资源的传感部分的初始化，切片一是主要处理通信业务的
-            link.communication_distribution[2][1] = 0.92 * (10 / 18)
-            link.communication_distribution[2][2] = 0.04 * (10 / 18)
-            link.communication_distribution[2][3] = 0.04 * (10 / 18)
+            link.communication_distribution[2][1] = 0.92 * (10 / 18)  # 切片一的用于传感数据包的通信资源占总量的92% * (5/9)(链路)
+            link.communication_distribution[2][2] = 0.04 * (10 / 18)  # 切片二的用于传感数据包的通信资源占总量的4% * (5/9)(链路)
+            link.communication_distribution[2][3] = 0.04 * (10 / 18)  # 切片三的用于传感数据包的通信资源占总量的4% * (5/9)(链路)
 
         for router in self.edge_routers_first.values():
             # 针对路由器带宽资源的初始化，切片一是主要处理通信业务的

@@ -50,7 +50,7 @@ print('GPU', tf.test.is_gpu_available())
 # print(gpus)
 #
 # local_device_protos = device_lib.list_local_devices()
-# devices = [x.name for x in local_device_protos]
+# devices = [_t.name for _t in local_device_protos]
 # for d in devices:
 #     print(d)
 from tensorflow.python.client import device_lib

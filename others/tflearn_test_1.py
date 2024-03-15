@@ -150,10 +150,10 @@ class AtariEnvironment(object):
 
     def get_preprocessed_frame(self, observation):
         """
-        0) Atari frames: 210 x 160
+        0) Atari frames: 210 _t 160
         1) Get image grayscale
-        2) Rescale image 110 x 84
-        3) Crop center 84 x 84 (you can crop top/bottom according to the game)
+        2) Rescale image 110 _t 84
+        3) Crop center 84 _t 84 (you can crop top/bottom according to the game)
         """
         return resize(rgb2gray(observation), (110, 84))[13:110 - 13, :]
 
@@ -359,7 +359,7 @@ def build_summaries():
     scalar_summary("Qmax Value", episode_ave_max_q)
     logged_epsilon = tf.Variable(0.)
     scalar_summary("Epsilon", logged_epsilon)
-    # Threads shouldn't modify the main graph, so we use placeholders
+    # Threads shouldn'_t modify the main graph, so we use placeholders
     # to assign the delay of every summary (instead of using assign method
     # in every process, that would keep creating new ops in the graph)
     summary_vars = [episode_reward, episode_ave_max_q, logged_epsilon]

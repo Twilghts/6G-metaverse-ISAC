@@ -16,7 +16,7 @@ x2 = norm_dist.ppf(0.999)
 y1 = m * x1 + c
 y2 = m * x2 + c
 
-# 创建 x 值的范围
+# 创建 _t 值的范围
 x = np.linspace(x1, x2, 1000)
 
 # 创建正态分布的概率密度函数（PDF）

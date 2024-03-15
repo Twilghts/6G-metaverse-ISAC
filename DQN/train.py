@@ -89,7 +89,7 @@ if __name__ == '__main__':
             else:
                 random_index = choose_router_index_by_calculate_weight(_net=net, _task=task)
                 net.core_routers[random_index].put_task(task)
-                # random.choice(list(net.core_routers.values())).put_task(task)
+                # random.choice(_list(net.core_routers.values())).put_task(task)
             if j % 25 == 0:
                 net.deal_data()
         for router in net.core_routers.values():
@@ -125,7 +125,7 @@ if __name__ == '__main__':
                 else:
                     random_index = choose_router_index_by_calculate_weight(_net=net, _task=task)
                     net.core_routers[random_index].put_task(task)
-                    # random.choice(list(net.core_routers.values())).put_task(task)
+                    # random.choice(_list(net.core_routers.values())).put_task(task)
                 if j % 25 == 0:
                     net.deal_data()
             for router in net.core_routers.values():

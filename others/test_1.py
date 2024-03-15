@@ -14,7 +14,7 @@ plt.plot(x, y, color='blue', linewidth=2)
 
 # 设置图像标题和轴标签
 plt.title('Standard Normal Distribution')
-plt.xlabel('x')
+plt.xlabel('_t')
 plt.ylabel('Probability Density')
 
 # 显示图像

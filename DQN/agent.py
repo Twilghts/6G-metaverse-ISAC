@@ -612,11 +612,10 @@ class DQN:
         self.dataset = tf.data.Dataset.from_tensor_slices((data, labels))
 
     def replay(self):
+        # 复制模型的权重
+        self.target_model.set_weights(self.policy_model.get_weights())
         self.policy_model.fit(self.dataset, batch_size=self.batch_size, epochs=_epochs, use_multiprocessing=True,
                               verbose=0)
         #  降低随机探索的概率
         if self.epsilon > self.epsilon_min:
-
             self.epsilon *= self.epsilon_decay
-        # 复制模型的权重
-        self.target_model.set_weights(self.policy_model.get_weights())

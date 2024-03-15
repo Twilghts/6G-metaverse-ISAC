@@ -12,7 +12,7 @@ y = (1 / (np.sqrt(2 * np.pi) * sigma)) * np.exp(-0.5 * ((x - mu) / sigma) ** 2) 
 # 绘制正态分布曲线
 plt.plot(x, y)
 plt.title('Normal Distribution')
-plt.xlabel('x')
+plt.xlabel('_t')
 plt.ylabel('Probability Density')
 plt.grid(True)
 plt.show()

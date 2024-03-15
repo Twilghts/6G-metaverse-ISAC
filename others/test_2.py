@@ -2,7 +2,7 @@ import numpy as np
 from DQN.agent import DQN
 
 x = ((1, 2, 3), (4, 5, 6), (7, 8, 9))
-# print(sum(x))
+# print(sum(_t))
 y = np.array(x, dtype=int)
 z = np.sum(y)
 agent = DQN((3, 3), 20)
